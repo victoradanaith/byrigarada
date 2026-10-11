@@ -452,7 +452,9 @@ function endGesture(e,cancelled){
 }
 stage.addEventListener('pointerup',e=>endGesture(e,false));
 stage.addEventListener('pointercancel',e=>endGesture(e,true));
-stage.addEventListener('lostpointercapture',e=>{if(P&&e.pointerId===P.id)endGesture(e,true)});
+// A touch that starts on a card is implicitly captured by that card; stage.setPointerCapture() then transfers it,
+// which fires lostpointercapture on the card and bubbles here. Only a loss on the stage itself ends the gesture.
+stage.addEventListener('lostpointercapture',e=>{if(e.target===stage&&P&&e.pointerId===P.id)endGesture(e,true)});
 window.addEventListener('click',e=>{
   if(e.detail>0&&performance.now()<suppressUntil){e.preventDefault();e.stopPropagation()}
 },true);
