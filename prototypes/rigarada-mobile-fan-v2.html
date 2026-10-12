@@ -32,6 +32,8 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 .seg label{min-height:44px;min-width:56px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:.9rem;font-weight:600;cursor:pointer}
 .seg input:checked+label{background:var(--accent);color:var(--accent-ink)}
 .seg input:focus-visible+label{outline:3px solid var(--focus)}
+#countSeg label{min-width:52px;padding:0 8px}
+@media(max-width:359px){.top{flex-wrap:wrap}.top #countSeg{margin-left:auto}}
 
 .status{margin:14px 0 8px}
 .status h2{font-size:1.15rem;margin:0}
@@ -46,6 +48,34 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 .tray.n1 .slot{width:84px}
 .tray.big .slot{width:min(28vw,108px)}
 .tray.big.n1 .slot{width:140px}
+.tray.n10{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 8px}
+.tray.n10 .slot{width:100%;min-width:0}
+.tray.big.n10{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
+.tray.big.n10 .slot{width:100%}
+.tray.n10 .cardname{overflow-wrap:anywhere}
+.app:has(.tray.celtic){max-width:760px}
+.tray.big.n10.celtic{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,.9fr);grid-template-rows:repeat(4,auto);gap:16px 12px;align-items:start}
+.tray.big.n10.celtic .slot{width:min(100%,120px);justify-self:center;position:relative}
+.tray.celtic .cardname{display:none}
+.tray.celtic .slotname{font-size:.7rem;text-align:center;min-height:30px;line-height:1.3}
+.tray.celtic .slot:nth-child(1){grid-column:2;grid-row:2}
+.tray.celtic .slot:nth-child(2){grid-column:2;grid-row:2;align-self:center;z-index:2;transform:translateY(20px)}
+.tray.celtic .slot:nth-child(2) .box{width:72%;transform:rotate(90deg)}
+.tray.celtic .slot:nth-child(2) .slotname{position:absolute;top:50%;z-index:3;min-height:0;padding:3px 5px;border-radius:5px;background:var(--accent);color:var(--accent-ink);white-space:nowrap;transform:translateY(-50%)}
+.tray.celtic .slot:nth-child(3){grid-column:2;grid-row:3}
+.tray.celtic .slot:nth-child(4){grid-column:1;grid-row:2}
+.tray.celtic .slot:nth-child(5){grid-column:2;grid-row:1}
+.tray.celtic .slot:nth-child(6){grid-column:3;grid-row:2}
+.tray.celtic .slot:nth-child(7){grid-column:4;grid-row:4}
+.tray.celtic .slot:nth-child(8){grid-column:4;grid-row:3}
+.tray.celtic .slot:nth-child(9){grid-column:4;grid-row:2}
+.tray.celtic .slot:nth-child(10){grid-column:4;grid-row:1}
+.spreadhelp{font-size:.85rem;color:var(--muted);margin:8px 0 14px}
+.spreadhelp[hidden]{display:none}
+.inspectimg[hidden]{display:none}
+.inspectimg{display:block;width:auto;height:auto;max-width:100%;max-height:55dvh;margin:12px auto;object-fit:contain;border-radius:8px}
+.inspectname{font-weight:700;color:var(--ink);text-align:center}
+#dlgInspect{max-height:90dvh;overflow:auto}
 .slotbtn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;cursor:pointer;border-radius:10px;padding:2px}
 .slotbtn:focus-visible{outline:3px solid var(--focus)}
 .slotname{font-size:.75rem;font-weight:700;color:var(--muted)}
@@ -130,6 +160,7 @@ dialog .row .btn{flex:1}
       <legend>Reading size</legend>
       <input type="radio" name="count" id="c1" value="1"><label for="c1">1 card</label>
       <input type="radio" name="count" id="c3" value="3"><label for="c3">3 cards</label>
+      <input type="radio" name="count" id="c10" value="10"><label for="c10">10 cards</label>
     </fieldset>
   </div>
 
@@ -139,6 +170,7 @@ dialog .row .btn{flex:1}
   </div>
 
   <ol class="tray" id="tray" aria-label="Your chosen cards"></ol>
+  <p class="spreadhelp" id="spreadHelp" hidden>Celtic Cross · Tap any position to inspect its card. Positions 7–10 form the column on the right.</p>
 
   <div id="stage" class="stage" role="listbox" tabindex="0"
        aria-roledescription="card fan" aria-label="Deck of face-down cards"
@@ -196,13 +228,25 @@ dialog .row .btn{flex:1}
   <div class="piles" id="piles"></div>
   <div class="row"><button class="btn" id="dCutCancel" type="button">Cancel</button></div>
 </dialog>
+<dialog id="dlgInspect" aria-labelledby="inspectTitle">
+  <h2 id="inspectTitle"></h2>
+  <p id="inspectMeaning"></p>
+  <img class="inspectimg" id="inspectImg" alt="">
+  <p id="inspectFallback" hidden>Artwork unavailable. Your draw is saved.</p>
+  <p class="inspectname" id="inspectName"></p>
+  <div class="row"><button class="btn" id="inspectPrev" type="button">Previous</button><button class="btn" id="inspectNext" type="button">Next</button></div>
+  <div class="row"><button class="btn primary" id="inspectClose" type="button">Back to spread</button></div>
+</dialog>
 
 <script>
 (()=>{
 "use strict";
 const DECK=[{"id":"major/00-the-fool","name":"The Fool","src":"../assets/tarot/major/00-the-fool.jpg","width":852,"height":1463},{"id":"major/01-the-magician","name":"The Magician","src":"../assets/tarot/major/01-the-magician.jpg","width":848,"height":1462},{"id":"major/02-the-high-priestess","name":"The High Priestess","src":"../assets/tarot/major/02-the-high-priestess.jpg","width":859,"height":1459},{"id":"major/03-the-empress","name":"The Empress","src":"../assets/tarot/major/03-the-empress.jpg","width":851,"height":1462},{"id":"major/04-the-emperor","name":"The Emperor","src":"../assets/tarot/major/04-the-emperor.jpg","width":853,"height":1462},{"id":"major/05-the-hierophant","name":"The Hierophant","src":"../assets/tarot/major/05-the-hierophant.jpg","width":852,"height":1463},{"id":"major/06-the-lovers","name":"The Lovers","src":"../assets/tarot/major/06-the-lovers.jpg","width":853,"height":1463},{"id":"major/07-the-chariot","name":"The Chariot","src":"../assets/tarot/major/07-the-chariot.jpg","width":852,"height":1462},{"id":"major/08-strength","name":"Strength","src":"../assets/tarot/major/08-strength.jpg","width":852,"height":1463},{"id":"major/09-the-hermit","name":"The Hermit","src":"../assets/tarot/major/09-the-hermit.jpg","width":852,"height":1463},{"id":"major/10-wheel-of-fortune","name":"Wheel Of Fortune","src":"../assets/tarot/major/10-wheel-of-fortune.jpg","width":854,"height":1463},{"id":"major/11-justice","name":"Justice","src":"../assets/tarot/major/11-justice.jpg","width":852,"height":1463},{"id":"major/12-the-hanged-man","name":"The Hanged Man","src":"../assets/tarot/major/12-the-hanged-man.jpg","width":852,"height":1463},{"id":"major/13-death","name":"Death","src":"../assets/tarot/major/13-death.jpg","width":852,"height":1463},{"id":"major/14-temperance","name":"Temperance","src":"../assets/tarot/major/14-temperance.jpg","width":852,"height":1462},{"id":"major/15-the-devil","name":"The Devil","src":"../assets/tarot/major/15-the-devil.jpg","width":852,"height":1463},{"id":"major/16-the-tower","name":"The Tower","src":"../assets/tarot/major/16-the-tower.jpg","width":853,"height":1463},{"id":"major/17-the-star","name":"The Star","src":"../assets/tarot/major/17-the-star.jpg","width":852,"height":1463},{"id":"major/18-the-moon","name":"The Moon","src":"../assets/tarot/major/18-the-moon.jpg","width":852,"height":1463},{"id":"major/19-the-sun","name":"The Sun","src":"../assets/tarot/major/19-the-sun.jpg","width":852,"height":1463},{"id":"major/20-judgement","name":"Judgement","src":"../assets/tarot/major/20-judgement.jpg","width":852,"height":1463},{"id":"major/21-the-world","name":"The World","src":"../assets/tarot/major/21-the-world.jpg","width":852,"height":1463},{"id":"wands/01-ace-of-wands","name":"Ace Of Wands","src":"../assets/tarot/wands/01-ace-of-wands.jpg","width":851,"height":1463},{"id":"wands/02-two-of-wands","name":"Two Of Wands","src":"../assets/tarot/wands/02-two-of-wands.jpg","width":853,"height":1464},{"id":"wands/03-three-of-wands","name":"Three Of Wands","src":"../assets/tarot/wands/03-three-of-wands.jpg","width":852,"height":1462},{"id":"wands/04-four-of-wands","name":"Four Of Wands","src":"../assets/tarot/wands/04-four-of-wands.jpg","width":854,"height":1462},{"id":"wands/05-five-of-wands","name":"Five Of Wands","src":"../assets/tarot/wands/05-five-of-wands.jpg","width":851,"height":1462},{"id":"wands/06-six-of-wands","name":"Six Of Wands","src":"../assets/tarot/wands/06-six-of-wands.jpg","width":852,"height":1463},{"id":"wands/07-seven-of-wands","name":"Seven Of Wands","src":"../assets/tarot/wands/07-seven-of-wands.jpg","width":852,"height":1463},{"id":"wands/08-eight-of-wands","name":"Eight Of Wands","src":"../assets/tarot/wands/08-eight-of-wands.jpg","width":854,"height":1464},{"id":"wands/09-nine-of-wands","name":"Nine Of Wands","src":"../assets/tarot/wands/09-nine-of-wands.jpg","width":851,"height":1463},{"id":"wands/10-ten-of-wands","name":"Ten Of Wands","src":"../assets/tarot/wands/10-ten-of-wands.jpg","width":852,"height":1463},{"id":"wands/11-page-of-wands","name":"Page Of Wands","src":"../assets/tarot/wands/11-page-of-wands.jpg","width":852,"height":1462},{"id":"wands/12-knight-of-wands","name":"Knight Of Wands","src":"../assets/tarot/wands/12-knight-of-wands.jpg","width":853,"height":1463},{"id":"wands/13-queen-of-wands","name":"Queen Of Wands","src":"../assets/tarot/wands/13-queen-of-wands.jpg","width":853,"height":1462},{"id":"wands/14-king-of-wands","name":"King Of Wands","src":"../assets/tarot/wands/14-king-of-wands.jpg","width":852,"height":1462},{"id":"cups/01-ace-of-cups","name":"Ace Of Cups","src":"../assets/tarot/cups/01-ace-of-cups.jpg","width":852,"height":1463},{"id":"cups/02-two-of-cups","name":"Two Of Cups","src":"../assets/tarot/cups/02-two-of-cups.jpg","width":853,"height":1462},{"id":"cups/03-three-of-cups","name":"Three Of Cups","src":"../assets/tarot/cups/03-three-of-cups.jpg","width":852,"height":1462},{"id":"cups/04-four-of-cups","name":"Four Of Cups","src":"../assets/tarot/cups/04-four-of-cups.jpg","width":852,"height":1462},{"id":"cups/05-five-of-cups","name":"Five Of Cups","src":"../assets/tarot/cups/05-five-of-cups.jpg","width":852,"height":1463},{"id":"cups/06-six-of-cups","name":"Six Of Cups","src":"../assets/tarot/cups/06-six-of-cups.jpg","width":851,"height":1463},{"id":"cups/07-seven-of-cups","name":"Seven Of Cups","src":"../assets/tarot/cups/07-seven-of-cups.jpg","width":852,"height":1464},{"id":"cups/08-eight-of-cups","name":"Eight Of Cups","src":"../assets/tarot/cups/08-eight-of-cups.jpg","width":853,"height":1463},{"id":"cups/09-nine-of-cups","name":"Nine Of Cups","src":"../assets/tarot/cups/09-nine-of-cups.jpg","width":852,"height":1463},{"id":"cups/10-ten-of-cups","name":"Ten Of Cups","src":"../assets/tarot/cups/10-ten-of-cups.jpg","width":852,"height":1463},{"id":"cups/11-page-of-cups","name":"Page Of Cups","src":"../assets/tarot/cups/11-page-of-cups.jpg","width":852,"height":1462},{"id":"cups/12-knight-of-cups","name":"Knight Of Cups","src":"../assets/tarot/cups/12-knight-of-cups.jpg","width":853,"height":1463},{"id":"cups/13-queen-of-cups","name":"Queen Of Cups","src":"../assets/tarot/cups/13-queen-of-cups.jpg","width":852,"height":1463},{"id":"cups/14-king-of-cups","name":"King Of Cups","src":"../assets/tarot/cups/14-king-of-cups.jpg","width":852,"height":1463},{"id":"swords/01-ace-of-swords","name":"Ace Of Swords","src":"../assets/tarot/swords/01-ace-of-swords.jpg","width":852,"height":1463},{"id":"swords/02-two-of-swords","name":"Two Of Swords","src":"../assets/tarot/swords/02-two-of-swords.jpg","width":852,"height":1463},{"id":"swords/03-three-of-swords","name":"Three Of Swords","src":"../assets/tarot/swords/03-three-of-swords.jpg","width":852,"height":1463},{"id":"swords/04-four-of-swords","name":"Four Of Swords","src":"../assets/tarot/swords/04-four-of-swords.jpg","width":852,"height":1463},{"id":"swords/05-five-of-swords","name":"Five Of Swords","src":"../assets/tarot/swords/05-five-of-swords.jpg","width":851,"height":1463},{"id":"swords/06-six-of-swords","name":"Six Of Swords","src":"../assets/tarot/swords/06-six-of-swords.jpg","width":852,"height":1463},{"id":"swords/07-seven-of-swords","name":"Seven Of Swords","src":"../assets/tarot/swords/07-seven-of-swords.jpg","width":851,"height":1462},{"id":"swords/08-eight-of-swords","name":"Eight Of Swords","src":"../assets/tarot/swords/08-eight-of-swords.jpg","width":852,"height":1462},{"id":"swords/09-nine-of-swords","name":"Nine Of Swords","src":"../assets/tarot/swords/09-nine-of-swords.jpg","width":852,"height":1463},{"id":"swords/10-ten-of-swords","name":"Ten Of Swords","src":"../assets/tarot/swords/10-ten-of-swords.jpg","width":853,"height":1463},{"id":"swords/11-page-of-swords","name":"Page Of Swords","src":"../assets/tarot/swords/11-page-of-swords.jpg","width":851,"height":1463},{"id":"swords/12-knight-of-swords","name":"Knight Of Swords","src":"../assets/tarot/swords/12-knight-of-swords.jpg","width":852,"height":1462},{"id":"swords/13-queen-of-swords","name":"Queen Of Swords","src":"../assets/tarot/swords/13-queen-of-swords.jpg","width":852,"height":1463},{"id":"swords/14-king-of-swords","name":"King Of Swords","src":"../assets/tarot/swords/14-king-of-swords.jpg","width":852,"height":1463},{"id":"pentacles/01-ace-of-pentacles","name":"Ace Of Pentacles","src":"../assets/tarot/pentacles/01-ace-of-pentacles.jpg","width":852,"height":1463},{"id":"pentacles/02-two-of-pentacles","name":"Two Of Pentacles","src":"../assets/tarot/pentacles/02-two-of-pentacles.jpg","width":852,"height":1463},{"id":"pentacles/03-three-of-pentacles","name":"Three Of Pentacles","src":"../assets/tarot/pentacles/03-three-of-pentacles.jpg","width":852,"height":1462},{"id":"pentacles/04-four-of-pentacles","name":"Four Of Pentacles","src":"../assets/tarot/pentacles/04-four-of-pentacles.jpg","width":852,"height":1463},{"id":"pentacles/05-five-of-pentacles","name":"Five Of Pentacles","src":"../assets/tarot/pentacles/05-five-of-pentacles.jpg","width":852,"height":1462},{"id":"pentacles/06-six-of-pentacles","name":"Six Of Pentacles","src":"../assets/tarot/pentacles/06-six-of-pentacles.jpg","width":851,"height":1463},{"id":"pentacles/07-seven-of-pentacles","name":"Seven Of Pentacles","src":"../assets/tarot/pentacles/07-seven-of-pentacles.jpg","width":851,"height":1462},{"id":"pentacles/08-eight-of-pentacles","name":"Eight Of Pentacles","src":"../assets/tarot/pentacles/08-eight-of-pentacles.jpg","width":851,"height":1463},{"id":"pentacles/09-nine-of-pentacles","name":"Nine Of Pentacles","src":"../assets/tarot/pentacles/09-nine-of-pentacles.jpg","width":851,"height":1463},{"id":"pentacles/10-ten-of-pentacles","name":"Ten Of Pentacles","src":"../assets/tarot/pentacles/10-ten-of-pentacles.jpg","width":852,"height":1462},{"id":"pentacles/11-page-of-pentacles","name":"Page Of Pentacles","src":"../assets/tarot/pentacles/11-page-of-pentacles.jpg","width":852,"height":1463},{"id":"pentacles/12-knight-of-pentacles","name":"Knight Of Pentacles","src":"../assets/tarot/pentacles/12-knight-of-pentacles.jpg","width":852,"height":1463},{"id":"pentacles/13-queen-of-pentacles","name":"Queen Of Pentacles","src":"../assets/tarot/pentacles/13-queen-of-pentacles.jpg","width":851,"height":1463},{"id":"pentacles/14-king-of-pentacles","name":"King Of Pentacles","src":"../assets/tarot/pentacles/14-king-of-pentacles.jpg","width":852,"height":1463}];
 const N=DECK.length, SLOP=8, PX_PER_CARD=46, FLICK_MS=140, TAP_MAX_MS=650, SUPPRESS_MS=450;
-const POS={1:['Your card'],3:['Past','Present','Future']};
+const POS={1:['Your card'],3:['Past','Present','Future'],10:Array.from({length:10},(_,i)=>`Card ${i+1}`)};
+const CELTIC=['Present','Challenge','Foundation','Past','Goals','Near future','Self','Environment','Hopes & fears','Outcome'];
+const CONTEXT=['The situation at the centre of the reading.','What crosses or challenges the situation.','The underlying influences or roots.','The background and recent past.','Your conscious goals or possibilities.','The next developments to consider.','Your perspective and approach.','The people and circumstances around you.','Your hopes, fears or expectations.','The direction suggested by the spread.'];
+const positionLabel=i=>S.count===10?`${i+1} · ${CELTIC[i]}`:POS[S.count][i];
 const $=s=>document.querySelector(s);
 const stage=$('#stage'), live=$('#live');
 const mqRM=matchMedia('(prefers-reduced-motion: reduce)');
@@ -213,7 +257,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // Card identities live only in this closure; the DOM never carries them before reveal.
 const S={count:3,order:shuffled([...Array(N).keys()]),slots:[null,null,null],cur:Math.floor(N/2),
   revealed:false,hist:[],motion:'auto',shape:'rect',busy:false};
-let f=S.cur, cardEls=[], raf=0, P=null, suppressUntil=0, wheelAcc=0, revealGeneration=0;
+let f=S.cur, cardEls=[], raf=0, P=null, suppressUntil=0, wheelAcc=0, revealGeneration=0, selectionGeneration=0;
 
 const chosen=()=>S.slots.filter(x=>x!==null);
 const avail=()=>S.order.filter(id=>!S.slots.includes(id));
@@ -288,8 +332,10 @@ function choose(){
   const id=avail()[S.cur];
   if(id===undefined||S.slots.includes(id))return;            // guard: never duplicate
   S.busy=true;
+  const generation=selectionGeneration;
   const el=cardEls[S.cur];
   const commit=()=>{
+    if(generation!==selectionGeneration)return;
     snap();S.slots[slot]=id;S.busy=false;
     renderAll();
     const s=document.querySelector(`.slot[data-i="${slot}"]`);if(s){s.classList.add('pop')}
@@ -309,11 +355,13 @@ function removeSlot(i){
 }
 function undo(){
   if(S.revealed||!S.hist.length)return;
+  cancelPendingSelection();
   Object.assign(S,JSON.parse(S.hist.pop()));syncControls();renderAll();
   say(`Undone. ${chosen().length} of ${S.count} chosen.`);
 }
 function setCount(n){
   if(n===S.count)return;
+  cancelPendingSelection();
   if(S.revealed)newReading(false);
   snap();const keep=chosen();S.count=n;S.slots=Array(n).fill(null);
   keep.slice(0,n).forEach((id,i)=>S.slots[i]=id);
@@ -356,6 +404,7 @@ function reveal(){
     renderFace(li,id); // Load identity and artwork only after confirmation.
     li.classList.add('flipped');
     li.querySelector('.slotbtn').setAttribute('aria-label',`${POS[S.count][i]}: ${faceLabel(id)}`);
+    if(S.count===10){li.querySelector('.slotname').textContent=positionLabel(i);li.querySelector('.slotbtn').setAttribute('aria-label',`${positionLabel(i)}: ${faceLabel(id)}. Inspect card.`)}
     i++;
     if(i<slots.length)setTimeout(step,reduced()?0:520);
     else setTimeout(()=>{
@@ -382,8 +431,20 @@ function renderFace(li,id){
 }
 function newReading(announce=true){
   revealGeneration++; // Cancel callbacks from a reading replaced during its reveal.
+  cancelPendingSelection();
   S.revealed=false;S.hist=[];S.slots=Array(S.count).fill(null);S.order=shuffled([...Array(N).keys()]);S.cur=Math.floor(N/2);
   renderAll();if(announce){stage.focus();say('New reading. Deck reshuffled.')}
+}
+function cancelPendingSelection(){selectionGeneration++;S.busy=false;}
+let inspectIndex=0;
+function inspectCard(i){
+  if(!S.revealed||S.count!==10||!document.querySelector(`.slot[data-i="${i}"].flipped`))return;
+  inspectIndex=i;const card=DECK[S.slots[i]],img=$('#inspectImg');
+  $('#inspectTitle').textContent=positionLabel(i);$('#inspectMeaning').textContent=CONTEXT[i];
+  $('#inspectName').textContent=card.name;img.alt=card.name;img.hidden=false;$('#inspectFallback').hidden=true;
+  img.onerror=()=>{img.hidden=true;$('#inspectFallback').hidden=false};img.src=card.src;
+  setDis($('#inspectPrev'),i===0);setDis($('#inspectNext'),i===9||!document.querySelector(`.slot[data-i="${i+1}"].flipped`));
+  if(!$('#dlgInspect').open)$('#dlgInspect').showModal();
 }
 function nudge(){const t=$('#tray');t.classList.remove('nudge');void t.offsetWidth;t.classList.add('nudge')}
 
@@ -395,7 +456,8 @@ function renderAll(){
 }
 function renderTray(){
   const ol=$('#tray');ol.innerHTML='';
-  ol.className='tray n'+S.count+(S.revealed?' big locked':'');
+  ol.className='tray n'+S.count+(S.revealed?' big locked':'')+(S.revealed&&S.count===10?' celtic':'');
+  $('#spreadHelp').hidden=!(S.revealed&&S.count===10);
   S.slots.forEach((id,i)=>{
     const li=document.createElement('li');li.className='slot'+(id!==null?' filled':'');li.dataset.i=i;
     li.innerHTML=`<button class="slotbtn" type="button"><span class="slotname" aria-hidden="true">${POS[S.count][i]}</span>
@@ -403,7 +465,7 @@ function renderTray(){
       <span class="flip"><span class="back"></span><span class="face"></span></span><span class="x">✕</span></span></button>`;
     const b=li.querySelector('.slotbtn');
     b.setAttribute('aria-label',id===null?`${POS[S.count][i]}: empty`:`${POS[S.count][i]}: face-down card chosen. Activate to put it back.`);
-    b.onclick=()=>{if(S.revealed)return;if(S.slots[i]!==null)removeSlot(i);else say(`${POS[S.count][i]} is empty.`)};
+    b.onclick=()=>{if(S.revealed){inspectCard(i);return}if(S.slots[i]!==null)removeSlot(i);else say(`${POS[S.count][i]} is empty.`)};
     b.onkeydown=e=>{if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();removeSlot(i)}};
     ol.appendChild(li);
   });
@@ -520,6 +582,8 @@ on('#bShuffle',doShuffle);on('#bCut',openCut);
 $('#dBack').onclick=()=>{$('#dlgReveal').close();say('Picks kept. You can still change them.')};
 $('#dGo').onclick=reveal;
 $('#dCutCancel').onclick=()=>$('#dlgCut').close();
+on('#inspectPrev',()=>inspectCard(inspectIndex-1));on('#inspectNext',()=>inspectCard(inspectIndex+1));
+$('#inspectClose').onclick=()=>$('#dlgInspect').close();
 
 function syncControls(){for(const k of ['count','motion','shape']){const el=document.querySelector(`input[name="${k}"][value="${S[k]}"]`);if(el)el.checked=true}}
 document.querySelectorAll('input[type=radio]').forEach(inp=>inp.addEventListener('change',()=>{
