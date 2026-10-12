@@ -24,3 +24,7 @@ confirmation, unique IDs, actual image loading, reset, size changes during selec
 horizontal overflow and ten missing-image fallbacks. The fan gesture code is unchanged. Celtic Cross inspection and layout are also checked at desktop width.
 
 Position numbering follows a common variant; Celtic Cross variants differ in positions 3/5 and 4/6. Reference: https://tarotelements.com/celtic-cross-tarot-spread/
+
+## Viewport fit correction
+
+The revealed Celtic Cross reserves space for the header, status, inspection hint and New reading control, then sizes all ten card boxes equally from the remaining area. The crossing card uses the same intrinsic dimensions, rotated 90 degrees. Source artwork remains proportional within those boxes. Short screens use position number badges and larger inspection dialogs; extra options are hidden after a ten-card reveal. Tested portrait, landscape and desktop viewports: 320×568, 375×667, 390×844, 568×320, 844×390, 1024×768, 1440×900. Physical devices and browser chrome variations remain untested.
