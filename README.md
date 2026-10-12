@@ -1,36 +1,22 @@
 # RigaRada
 
-Mobile-first card-reading prototype. This repository currently holds one standalone
-prototype: the **Fan Arc v2** card-selection flow.
-
-## Purpose
-
-Explore a touch-friendly way to pick 1 or 3 face-down cards from a deck of 22, then
-confirm and reveal them. Most users are expected to be on mobile, so the fan arc
-(swipe to browse, tap or press Select to choose) is the preferred primary flow.
-
-All card faces are neutral placeholders ("Card 01" … "Card 22", "Artwork TBD").
-Final artwork is a separate workstream and is not part of this repository yet.
+Mobile-first Fan Arc tarot picker with the complete 78-card Modern Doodle Tarot deck.
+Choose 1 or 3 face-down cards, review or undo your picks, then confirm to reveal the artwork.
+Swiping browses without selecting. Previous/Next buttons and keyboard controls are available.
 
 ## Run locally
 
-The prototype is a single self-contained HTML file with no build step, no framework and
-no external dependencies.
+No build step or external dependencies. Serve the repository with `python3 -m http.server`
+and visit `/prototypes/rigarada-mobile-fan-v2.html`.
+Keep `assets/tarot/` alongside `prototypes/` when copying the site.
 
-- Open `prototypes/rigarada-mobile-fan-v2.html` directly in a browser, or
-- serve the folder with any static server, e.g. `python3 -m http.server` from the
-  repository root, then visit `/prototypes/rigarada-mobile-fan-v2.html`.
+## Artwork
 
-For a realistic view, use a phone or your browser's device emulation at about
-375×812 or 390×844.
+78 approved illustrations: 22 Major Arcana and 14 cards in each of Wands, Cups, Swords and Pentacles.
+XII uses the approved handstand reinterpretation. The final thin-margin crops are preserved
+in proportional JPEG web derivatives (long edge 900 px, quality 88); full-resolution originals
+remain outside this repository. `assets/tarot/deck.json` maps stable card IDs, names and paths.
+Artwork requests start only after reveal confirmation. A readable named fallback appears if
+an image fails to load; the selected draw remains unchanged.
 
-## Layout
-
-```
-README.md
-docs/FAN_ARC_HANDOFF.md                 design decisions, evidence, next steps
-prototypes/rigarada-mobile-fan-v2.html  the prototype
-```
-
-See [docs/FAN_ARC_HANDOFF.md](docs/FAN_ARC_HANDOFF.md) for the design rationale and
-what has and has not been tested.
+See [the handoff](docs/FAN_ARC_HANDOFF.md) for interaction details and testing limitations.
