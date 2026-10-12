@@ -1,7 +1,8 @@
 # RigaRada
 
 Mobile-first Fan Arc tarot picker with the complete 78-card Modern Doodle Tarot deck.
-Choose 1 or 3 face-down cards, review or undo your picks, then confirm to reveal the artwork.
+Choose 1, 3 or 10 face-down cards, review or undo your picks, then confirm to reveal the artwork.
+The 10-card draw labels picks Card 1–10 in order and reveals them as a Celtic Cross. Tap a position for a larger image, its label and Previous/Next navigation.
 Swiping browses without selecting. Previous/Next buttons and keyboard controls are available.
 
 ## Run locally
