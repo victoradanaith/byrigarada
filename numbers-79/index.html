@@ -149,6 +149,47 @@ dialog .row .btn{flex:1}
 .piles i{width:40px;aspect-ratio:var(--ar);border-radius:var(--rad)}
 
 .rm *,.rm *::before,.rm *::after{transition:none!important;animation:none!important}
+
+/* Budget every state against the visible browser viewport, not just reveal. */
+.app,.app:has(.tray.revealed){width:var(--app-width,100%);max-width:1000px;height:var(--app-height,100dvh);min-height:0;margin:0 auto;padding:6px 10px max(6px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:4px}
+.app>*{flex-shrink:0}
+.top{min-height:20px}.brand{font-size:.9rem}.reading-size{font-size:.75rem}
+.app .status,.app:has(.tray.revealed)>.status{margin:0;display:flex;align-items:baseline;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.app .status h2{font-size:.95rem;line-height:1.2}.app .status p{font-size:.72rem;line-height:1.2;margin:0}
+.tray.mapped,.tray.mapped.revealed{flex:1;min-height:0;grid-template-columns:repeat(4,var(--spread-cell,44px));grid-template-rows:repeat(3,minmax(0,1fr));gap:4px;justify-content:center;align-items:start}
+.tray.mapped .slot{width:100%;min-width:0}.tray.mapped .slotbtn{min-height:44px;padding:2px;gap:2px;justify-content:flex-start}
+.tray.mapped .slotname{font-size:0;height:12px;line-height:12px}.tray.mapped .slotname::before{content:"#" attr(data-position);font-size:.65rem}
+.tray.mapped .box,.tray.mapped.revealed .box{width:var(--spread-w,26px);height:var(--spread-h,44px);aspect-ratio:auto!important;flex-shrink:0}
+.x{top:0;right:0;width:18px;height:18px;font-size:.65rem;box-shadow:none}
+.slot.pop .box{animation:none}
+.stage{height:var(--fan-height,100px);min-height:0;flex-shrink:0;margin:0 -10px;--cw:42px}
+.stage::before{top:0;width:110px;height:110px;margin-left:-55px}
+.card{top:var(--fan-top,48px)}.card.is-center{box-shadow:0 4px 8px rgba(0,0,0,.3),inset 0 0 0 4px var(--back1),inset 0 0 0 5px var(--back-line),0 0 0 3px var(--accent)}
+.focuslabel{min-height:0;margin:0;line-height:1.1}.focuslabel b{font-size:.75rem}.focuslabel span{display:none}
+.pick{grid-template-columns:44px 1fr 44px;gap:6px}
+.app .btn,.app .btn.icon,.app .btn.select{min-height:44px;font-size:.9rem;padding:0 10px}
+.app .foot,.app:has(.tray.revealed) .foot{position:static;margin:0;padding:0;min-height:44px;background:none;gap:6px}
+.foot #bOptions{flex:0 0 auto;min-width:64px}
+.app .spreadhelp,.app:has(.tray.revealed) .spreadhelp{margin:0;font-size:.7rem;line-height:1.2}
+#bOptions[hidden]{display:none}
+dialog{max-height:calc(var(--app-height,100dvh) - 16px);padding:12px}
+dialog .row{margin-top:8px}dialog .btn{min-height:44px;font-size:.9rem;padding:0 8px}
+#dlgOptions h2{margin-bottom:6px}.morebody{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0}.morebody .lbl,.morebody .seg{grid-column:1/-1;margin:0}.morebody .seg{justify-content:center}.morebody .seg label{min-height:44px}
+#dlgInspect[open]{display:flex;flex-direction:column;gap:4px;overflow:visible}
+#dlgInspect h2{font-size:1rem;margin:0}#dlgInspect p{font-size:.75rem;margin:0}
+#dlgInspect .row{margin:0}
+.inspectnumber{height:clamp(32px,calc(var(--app-height,100dvh) - 190px),320px);width:auto;max-height:none;max-width:100%;aspect-ratio:.6;margin:2px auto;font-size:clamp(24px,10dvh,80px);flex-shrink:1}
+.short-wide .app{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.8fr);grid-template-rows:20px 18px minmax(0,1fr) 14px 44px 44px;gap:4px}
+.short-wide .top,.short-wide .status{grid-column:1/-1}
+.short-wide .tray{grid-column:1;grid-row:3/6;height:100%;width:100%}
+.short-wide .stage{grid-column:2;grid-row:3;height:100%;width:100%;margin:0}
+.short-wide .focuslabel{grid-column:2;grid-row:4}
+.short-wide .pick{grid-column:2;grid-row:5}
+.short-wide .foot{grid-column:1/-1;grid-row:6}
+.short-wide .spreadhelp{grid-column:2;grid-row:3/6;align-self:center;line-height:1.4}
+.short-wide .app.ready .tray,.short-wide .app.revealed .tray{grid-row:3/6}
+.short-wide .app.ready .spreadhelp{display:block}
+
 </style>
 </head>
 <body>
@@ -179,26 +220,8 @@ dialog .row .btn{flex:1}
     <button class="btn icon" id="bNext" type="button" aria-label="Next card">›</button>
   </div>
 
-  <details class="more">
-    <summary>More options</summary>
-    <div class="morebody">
-      <button class="btn" id="bShuffle" type="button">Shuffle</button>
-      <button class="btn" id="bCut" type="button">Cut…</button>
-      <span class="lbl" aria-hidden="true">Motion</span>
-      <fieldset class="seg"><legend>Reduce motion</legend>
-        <input type="radio" name="motion" id="r-auto" value="auto"><label for="r-auto">Auto</label>
-        <input type="radio" name="motion" id="r-on" value="on"><label for="r-on">Reduce</label>
-        <input type="radio" name="motion" id="r-off" value="off"><label for="r-off">Full</label>
-      </fieldset>
-      <span class="lbl" aria-hidden="true">Card shape (placeholder)</span>
-      <fieldset class="seg"><legend>Card shape</legend>
-        <input type="radio" name="shape" id="s-rect" value="rect"><label for="s-rect">Rect</label>
-        <input type="radio" name="shape" id="s-oval" value="oval"><label for="s-oval">Oval</label>
-      </fieldset>
-    </div>
-  </details>
-
   <div class="foot">
+    <button class="btn" id="bOptions" type="button">Options</button>
     <button class="btn" id="bUndo" type="button">Undo</button>
     <button class="btn primary" id="bReveal" type="button">Reveal…</button>
     <button class="btn primary" id="bNew" type="button" hidden>New reading</button>
@@ -214,6 +237,21 @@ dialog .row .btn{flex:1}
     <button class="btn" id="dBack" type="button">Go back</button>
     <button class="btn primary" id="dGo" type="button">Reveal cards</button>
   </div>
+</dialog>
+
+<dialog id="dlgOptions" aria-labelledby="optionsTitle">
+  <h2 id="optionsTitle">Options</h2>
+  <div class="morebody">
+      <button class="btn" id="bShuffle" type="button">Shuffle</button>
+      <button class="btn" id="bCut" type="button">Cut…</button>
+      <span class="lbl" aria-hidden="true">Motion</span>
+      <fieldset class="seg"><legend>Reduce motion</legend>
+        <input type="radio" name="motion" id="r-auto" value="auto"><label for="r-auto">Auto</label>
+        <input type="radio" name="motion" id="r-on" value="on"><label for="r-on">Reduce</label>
+        <input type="radio" name="motion" id="r-off" value="off"><label for="r-off">Full</label>
+      </fieldset>
+</div>
+  <div class="row"><button class="btn primary" id="optionsClose" type="button">Done</button></div>
 </dialog>
 
 <dialog id="dlgCut" aria-labelledby="dCH">
@@ -431,11 +469,22 @@ function renderAll(){
   renderTray();buildDeck();renderStatus();fitSpread();
 }
 function fitSpread(){
-  if(!S.revealed)return;
+  const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight;
+  const root=document.documentElement;
+  root.style.setProperty('--app-height',Math.floor(h)+'px');
+  root.style.setProperty('--app-width',Math.floor(w)+'px');
+  root.classList.toggle('short-wide',w>=480&&h<500);
+  root.style.setProperty('--fan-height',(h<540?72:100)+'px');
+  if(!stage.classList.contains('locked')){
+    const sh=stage.clientHeight,cw=Math.min(42,Math.max(22,(sh-4)*.6/1.32));
+    stage.style.setProperty('--cw',cw+'px');stage.style.setProperty('--fan-top',(34+sh/2-cw/1.2)+'px');
+  }
   const tray=$('#tray'),r=tray.getBoundingClientRect();
-  const label=tray.querySelector('.slotname'),extra=label.offsetHeight+8;
-  const h=Math.max(12,Math.min(220,(r.width-40)/2.4,(r.height-3*extra-16)/3));
-  tray.style.setProperty('--spread-h',h+'px');tray.style.setProperty('--spread-w',(h*.6)+'px');
+  const label=tray.querySelector('.slotname'),extra=label.offsetHeight+6;
+  const cardH=Math.max(12,Math.min(220,(r.width-28)/2.4,(r.height-8)/3-extra));
+  tray.style.setProperty('--spread-h',cardH+'px');
+  tray.style.setProperty('--spread-w',(cardH*.6)+'px');
+  tray.style.setProperty('--spread-cell',Math.max(44,cardH*.6+4)+'px');
 }
 function renderTray(){
   const ol=$('#tray');ol.innerHTML='';
@@ -458,8 +507,11 @@ function renderStatus(){
   const n=chosen().length,left=S.count-n;
   $('#headline').textContent=S.revealed?'Revealing…':(left?`Choose ${S.count===1?'1 card':left===S.count?S.count+' cards':left+' more'}`:'Ready to reveal');
   $('#progress').innerHTML=`<b>${n} of ${S.count}</b> chosen · ${left} left · ${avail().length} in deck`;
-  stage.classList.toggle('locked',S.revealed);stage.inert=S.revealed;
-  $('#pick').hidden=S.revealed;$('#focusLabel').hidden=S.revealed;
+  const full=left===0;
+  $('#spreadHelp').textContent=S.revealed?'10-card spread · Positions show draw order. Tap a card to inspect.':'All 10 chosen. Reveal below, or tap a card to remove it.';
+  $('.app').classList.toggle('ready',full&&!S.revealed);$('.app').classList.toggle('revealed',S.revealed);
+  stage.classList.toggle('locked',S.revealed||full);stage.inert=S.revealed||full;
+  $('#pick').hidden=S.revealed||full;$('#focusLabel').hidden=S.revealed||full;
   $('#bUndo').hidden=S.revealed;setDis($('#bUndo'),!S.hist.length);
   $('#bReveal').hidden=S.revealed;setDis($('#bReveal'),left>0);
   $('#bReveal').textContent=left>0?`Reveal (${left} to go)`:'Reveal…';
@@ -562,7 +614,9 @@ on('#bSelect',choose);
 on('#bUndo',undo);
 on('#bReveal',askReveal,true);
 on('#bNew',()=>newReading(),true);
-on('#bShuffle',doShuffle);on('#bCut',openCut);
+on('#bOptions',()=>$('#dlgOptions').showModal(),true);
+$('#optionsClose').onclick=()=>$('#dlgOptions').close();
+on('#bShuffle',()=>{$('#dlgOptions').close();doShuffle()});on('#bCut',()=>{$('#dlgOptions').close();openCut()});
 $('#dBack').onclick=()=>{$('#dlgReveal').close();say('Picks kept. You can still change them.')};
 $('#dGo').onclick=reveal;
 $('#dCutCancel').onclick=()=>$('#dlgCut').close();
@@ -576,7 +630,9 @@ document.querySelectorAll('input[type=radio]').forEach(inp=>inp.addEventListener
   document.documentElement.dataset.shape=S.shape;paint(f);
 }));
 mqRM.addEventListener?.('change',()=>document.documentElement.classList.toggle('rm',reduced()));
-let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{paint(f);fitSpread()},80)});
+let rz;const resizeLayout=()=>{fitSpread();paint(f);clearTimeout(rz);rz=setTimeout(fitSpread,80)};
+addEventListener('resize',resizeLayout);visualViewport?.addEventListener('resize',resizeLayout);
+visualViewport?.addEventListener('scroll',resizeLayout);
 
 syncControls();renderAll();
 })();
