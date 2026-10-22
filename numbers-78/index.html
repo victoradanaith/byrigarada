@@ -32,8 +32,7 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 .seg label{min-height:44px;min-width:56px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:.9rem;font-weight:600;cursor:pointer}
 .seg input:checked+label{background:var(--accent);color:var(--accent-ink)}
 .seg input:focus-visible+label{outline:3px solid var(--focus)}
-#countSeg label{min-width:52px;padding:0 8px}
-@media(max-width:359px){.top{flex-wrap:wrap}.top #countSeg{margin-left:auto}}
+.reading-size{font-size:.9rem;font-weight:650;color:var(--muted)}
 
 .status{margin:14px 0 8px}
 .status h2{font-size:1.15rem;margin:0}
@@ -44,48 +43,32 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 .tray{display:flex;justify-content:center;gap:12px;list-style:none;margin:0;padding:0}
 .tray.nudge{animation:nudge .35s}
 @keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.slot{width:64px}
-.tray.n1 .slot{width:84px}
-.tray.big .slot{width:min(28vw,108px)}
-.tray.big.n1 .slot{width:140px}
-.tray.n10{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 8px}
-.tray.n10 .slot{width:100%;min-width:0}
-.tray.big.n10{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
-.tray.big.n10 .slot{width:100%}
-.tray.n10 .cardname{overflow-wrap:anywhere}
-.app:has(.tray.celtic){max-width:none;height:100dvh;min-height:0;padding-top:8px}
-.app:has(.tray.celtic)>.top,.app:has(.tray.celtic)>.status,.app:has(.tray.celtic)>.spreadhelp,.app:has(.tray.celtic)>details,.app:has(.tray.celtic)>.foot{flex-shrink:0}
-.app:has(.tray.celtic)>.status{margin:8px 0}
-.app:has(.tray.celtic)>details{display:none}
-.app:has(.tray.celtic) .foot{padding-top:6px}
-.app:has(.tray.celtic) .spreadhelp{margin:4px 0;font-size:.75rem}
-.tray.big.n10.celtic{flex:1;min-height:0;grid-template-columns:var(--spread-w) var(--spread-h) var(--spread-w) var(--spread-w);grid-template-rows:repeat(4,minmax(0,1fr));gap:6px 8px;justify-content:center;align-items:start}
-.tray.big.n10.celtic .slot{width:var(--spread-w);justify-self:center;position:relative}
-.tray.celtic .cardname{display:none}
-.tray.celtic .slotname{font-size:.65rem;text-align:center;height:26px;line-height:1.2;display:flex;align-items:center;justify-content:center}
-.tray.celtic .slot:nth-child(1){grid-column:2;grid-row:2}
-.tray.celtic .slot:nth-child(2){grid-column:2;grid-row:2;align-self:center;z-index:2;transform:translateY(13px)}
-.tray.celtic .box{width:var(--spread-w);height:var(--spread-h);aspect-ratio:auto!important}
-.tray.celtic .slot:nth-child(2) .box{transform:rotate(90deg)}
-.tray.celtic .slot:nth-child(2) .slotname{visibility:hidden}
-/* Keep position text off the crossing face; inspect for its position. */
-.tray.celtic .slot:first-child .face{justify-content:flex-start;padding-top:4%}
-.tray.celtic .slot:first-child .numeral{font-size:22cqw}
-.tray.celtic .slot:nth-child(3){grid-column:2;grid-row:3}
-.tray.celtic .slot:nth-child(4){grid-column:1;grid-row:2}
-.tray.celtic .slot:nth-child(5){grid-column:2;grid-row:1}
-.tray.celtic .slot:nth-child(6){grid-column:3;grid-row:2}
-.tray.celtic .slot:nth-child(7){grid-column:4;grid-row:4}
-.tray.celtic .slot:nth-child(8){grid-column:4;grid-row:3}
-.tray.celtic .slot:nth-child(9){grid-column:4;grid-row:2}
-.tray.celtic .slot:nth-child(10){grid-column:4;grid-row:1}
-@media(max-height:600px){
-  .tray.celtic .slotname{display:none}
-  .tray.celtic .slot:nth-child(2){align-self:start;transform:none}
-  .app:has(.tray.celtic) .status{margin:4px 0}
-  .app:has(.tray.celtic) .spreadhelp{font-size:.7rem}
-}
-@media(max-height:450px){.app:has(.tray.celtic){padding-top:4px}.app:has(.tray.celtic) #countSeg label{min-height:32px}.app:has(.tray.celtic) .status h2{font-size:1rem;line-height:1.2}.app:has(.tray.celtic) .status p{font-size:.75rem;margin:0}.app:has(.tray.celtic) .foot{padding:4px 0}.app:has(.tray.celtic) .foot .btn{min-height:40px}.tray.celtic .slotbtn{min-width:44px;margin-left:min(0px,calc((var(--spread-w) - 44px)/2))}}
+/* Positions follow draw order, independently of face numerals. */
+.tray.mapped{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,auto);gap:8px;align-items:start}
+.tray.mapped .slot{width:100%;min-width:0;position:relative}
+.tray.mapped .slotname{font-size:.7rem;text-align:center;height:18px;line-height:1.2;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.tray.mapped .box{aspect-ratio:.6!important}
+.tray.mapped .cardname{display:none}
+.app:has(.tray.revealed){max-width:none;height:100dvh;min-height:0;padding-top:8px}
+.app:has(.tray.revealed)>.top,.app:has(.tray.revealed)>.status,.app:has(.tray.revealed)>.spreadhelp,.app:has(.tray.revealed)>.foot{flex-shrink:0}
+.app:has(.tray.revealed)>.status{margin:8px 0}
+.app:has(.tray.revealed)>details{display:none}
+.app:has(.tray.revealed) .foot{padding-top:6px}
+.app:has(.tray.revealed) .spreadhelp{margin:4px 0;font-size:.75rem}
+.tray.mapped.revealed{flex:1;min-height:0;grid-template-columns:repeat(4,calc(var(--spread-w) + 4px));grid-template-rows:repeat(3,minmax(0,1fr));justify-content:center}
+.tray.mapped.revealed .box{width:var(--spread-w);height:var(--spread-h);aspect-ratio:auto!important}
+.tray.mapped .slot:nth-child(1){grid-column:2;grid-row:2}
+.tray.mapped .slot:nth-child(2){grid-column:1;grid-row:2}
+.tray.mapped .slot:nth-child(3){grid-column:2;grid-row:1}
+.tray.mapped .slot:nth-child(4){grid-column:3;grid-row:2}
+.tray.mapped .slot:nth-child(5){grid-column:2;grid-row:3}
+.tray.mapped .slot:nth-child(6){grid-column:1;grid-row:1}
+.tray.mapped .slot:nth-child(7){grid-column:4;grid-row:3}
+.tray.mapped .slot:nth-child(8){grid-column:4;grid-row:2}
+.tray.mapped .slot:nth-child(9){grid-column:4;grid-row:1}
+.tray.mapped .slot:nth-child(10){grid-column:3;grid-row:1}
+@media(max-height:450px){.app:has(.tray.revealed){padding-top:4px}.app:has(.tray.revealed) .status{margin:4px 0}.app:has(.tray.revealed) .status h2{font-size:1rem;line-height:1.2}.app:has(.tray.revealed) .status p{font-size:.75rem;margin:0}.app:has(.tray.revealed) .foot{padding:4px 0}.app:has(.tray.revealed) .foot .btn{min-height:40px}.tray.mapped .slotname{font-size:0;height:14px}.tray.mapped .slotname::before{content:"#" attr(data-position);font-size:.65rem}}
+
 .spreadhelp{font-size:.85rem;color:var(--muted);margin:8px 0 14px}
 .spreadhelp[hidden]{display:none}
 .inspectimg[hidden]{display:none}
@@ -172,21 +155,16 @@ dialog .row .btn{flex:1}
 <main class="app">
   <div class="top">
     <h1 class="brand">RigaRada</h1>
-    <fieldset class="seg" id="countSeg">
-      <legend>Reading size</legend>
-      <input type="radio" name="count" id="c1" value="1"><label for="c1">1 card</label>
-      <input type="radio" name="count" id="c3" value="3"><label for="c3">3 cards</label>
-      <input type="radio" name="count" id="c10" value="10"><label for="c10">10 cards</label>
-    </fieldset>
+    <span class="reading-size">10 cards</span>
   </div>
 
   <div class="status">
-    <h2 id="headline" tabindex="-1">Choose 3 cards</h2>
+    <h2 id="headline" tabindex="-1">Choose 10 cards</h2>
     <p id="progress"></p>
   </div>
 
   <ol class="tray" id="tray" aria-label="Your chosen cards"></ol>
-  <p class="spreadhelp" id="spreadHelp" hidden>Celtic Cross · Tap a position to inspect its card.</p>
+  <p class="spreadhelp" id="spreadHelp" hidden>10-card spread · Positions show draw order. Tap a card to inspect.</p>
 
   <div id="stage" class="stage" role="listbox" tabindex="0"
        aria-roledescription="card fan" aria-label="Deck of face-down cards"
@@ -257,10 +235,8 @@ dialog .row .btn{flex:1}
 "use strict";
 const DECK=Array.from({length:78},(_,i)=>({id:String(i+1),name:String(i+1),width:600,height:1000}));
 const N=DECK.length, SLOP=8, PX_PER_CARD=46, FLICK_MS=140, TAP_MAX_MS=650, SUPPRESS_MS=450;
-const POS={1:['Your card'],3:['Past','Present','Future'],10:Array.from({length:10},(_,i)=>`Card ${i+1}`)};
-const CELTIC=['Present','Challenge','Foundation','Past','Goals','Near future','Self','Environment','Hopes & fears','Outcome'];
-const CONTEXT=['The situation at the centre of the reading.','What crosses or challenges the situation.','The underlying influences or roots.','The background and recent past.','Your conscious goals or possibilities.','The next developments to consider.','Your perspective and approach.','The people and circumstances around you.','Your hopes, fears or expectations.','The direction suggested by the spread.'];
-const positionLabel=i=>S.count===10?`${i+1} · ${CELTIC[i]}`:POS[S.count][i];
+const POS={10:Array.from({length:10},(_,i)=>`Position ${i+1}`)};
+const positionLabel=i=>POS[10][i];
 const $=s=>document.querySelector(s);
 const stage=$('#stage'), live=$('#live');
 const mqRM=matchMedia('(prefers-reduced-motion: reduce)');
@@ -269,7 +245,7 @@ const faceLabel=id=>DECK[id].name;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 // Card identities live only in this closure; the DOM never carries them before reveal.
-const S={count:3,order:shuffled([...Array(N).keys()]),slots:[null,null,null],cur:Math.floor(N/2),
+const S={count:10,order:shuffled([...Array(N).keys()]),slots:Array(10).fill(null),cur:Math.floor(N/2),
   revealed:false,hist:[],motion:'auto',shape:'rect',busy:false};
 let f=S.cur, cardEls=[], raf=0, P=null, suppressUntil=0, wheelAcc=0, revealGeneration=0, selectionGeneration=0;
 
@@ -373,15 +349,6 @@ function undo(){
   Object.assign(S,JSON.parse(S.hist.pop()));syncControls();renderAll();
   say(`Undone. ${chosen().length} of ${S.count} chosen.`);
 }
-function setCount(n){
-  if(n===S.count)return;
-  cancelPendingSelection();
-  if(S.revealed)newReading(false);
-  snap();const keep=chosen();S.count=n;S.slots=Array(n).fill(null);
-  keep.slice(0,n).forEach((id,i)=>S.slots[i]=id);
-  renderAll();
-  say(`${n}-card reading. ${chosen().length} of ${n} chosen.`+(keep.length>n?' Extra picks returned to the deck.':''));
-}
 function doShuffle(){
   if(S.revealed)return;
   snap();S.order=shuffled(S.order);S.cur=Math.floor(avail().length/2);renderAll();say('Deck shuffled.');
@@ -426,7 +393,7 @@ function reveal(){
       $('#headline').textContent='Your reading';$('#headline').focus();
       say('Revealed. '+S.slots.map((id,k)=>`${POS[S.count][k]}: ${faceLabel(id)}`).join('. ')+'.');
       $('#bNew').hidden=false;
-      fitCeltic(); // Include the visible New reading control in the final viewport budget.
+      fitSpread(); // Include the visible New reading control in the final viewport budget.
     },reduced()?0:450);
   };
   setTimeout(step,reduced()?0:200);
@@ -450,7 +417,7 @@ let inspectIndex=0;
 function inspectCard(i){
   if(!S.revealed||S.count!==10||!document.querySelector(`.slot[data-i="${i}"].flipped`))return;
   inspectIndex=i;const card=DECK[S.slots[i]];
-  $('#inspectTitle').textContent=positionLabel(i);$('#inspectMeaning').textContent=CONTEXT[i];
+  $('#inspectTitle').textContent=positionLabel(i);$('#inspectMeaning').textContent=`Card ${i+1} in your selection order.`;
   $('#inspectNumber').textContent=card.name;
   setDis($('#inspectPrev'),i===0);setDis($('#inspectNext'),i===9||!document.querySelector(`.slot[data-i="${i+1}"].flipped`));
   if(!$('#dlgInspect').open)$('#dlgInspect').showModal();
@@ -461,18 +428,18 @@ function nudge(){const t=$('#tray');t.classList.remove('nudge');void t.offsetWid
 function renderAll(){
   document.documentElement.classList.toggle('rm',reduced());
   document.documentElement.dataset.shape=S.shape;
-  renderTray();buildDeck();renderStatus();fitCeltic();
+  renderTray();buildDeck();renderStatus();fitSpread();
 }
-function fitCeltic(){
-  if(!S.revealed||S.count!==10)return;
+function fitSpread(){
+  if(!S.revealed)return;
   const tray=$('#tray'),r=tray.getBoundingClientRect();
-  const label=tray.querySelector('.slotname'),extra=getComputedStyle(label).position==='absolute'?4:label.offsetHeight+8;
-  const h=Math.max(12,Math.min(160,(r.width-24)/2.8,(r.height-4*extra-18)/4));
+  const label=tray.querySelector('.slotname'),extra=label.offsetHeight+8;
+  const h=Math.max(12,Math.min(220,(r.width-40)/2.4,(r.height-3*extra-16)/3));
   tray.style.setProperty('--spread-h',h+'px');tray.style.setProperty('--spread-w',(h*.6)+'px');
 }
 function renderTray(){
   const ol=$('#tray');ol.innerHTML='';
-  ol.className='tray n'+S.count+(S.revealed?' big locked':'')+(S.revealed&&S.count===10?' celtic':'');
+  ol.className='tray mapped'+(S.revealed?' revealed locked':'');
   $('#spreadHelp').hidden=!(S.revealed&&S.count===10);
   S.slots.forEach((id,i)=>{
     const li=document.createElement('li');li.className='slot'+(id!==null?' filled':'');li.dataset.i=i;
@@ -604,13 +571,12 @@ $('#inspectClose').onclick=()=>$('#dlgInspect').close();
 
 function syncControls(){for(const k of ['count','motion','shape']){const el=document.querySelector(`input[name="${k}"][value="${S[k]}"]`);if(el)el.checked=true}}
 document.querySelectorAll('input[type=radio]').forEach(inp=>inp.addEventListener('change',()=>{
-  if(inp.name==='count'){setCount(+inp.value);return}
   S[inp.name]=inp.value;
   document.documentElement.classList.toggle('rm',reduced());
   document.documentElement.dataset.shape=S.shape;paint(f);
 }));
 mqRM.addEventListener?.('change',()=>document.documentElement.classList.toggle('rm',reduced()));
-let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{paint(f);fitCeltic()},80)});
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{paint(f);fitSpread()},80)});
 
 syncControls();renderAll();
 })();
