@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RigaRada · Numbers 1–78</title>
+<style>
+:root{
+  --bg:#f4f1ea;--surface:#fffdf8;--ink:#1f1d24;--muted:#5f5a68;--line:#d6cfc2;
+  --accent:#5143a8;--accent-ink:#fff;--accent-soft:rgba(81,67,168,.16);
+  --back1:#2b2838;--back2:#36324a;--back-line:#c9b98a;--ok:#2a7f5f;--focus:#c98a00;
+  --cw:76px;--ar:0.6;--rad:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14131a;--surface:#1f1d28;--ink:#ece8f2;--muted:#a9a4b6;--line:#3a3646;
+  --accent:#a394ff;--accent-ink:#14131a;--accent-soft:rgba(163,148,255,.18);--ok:#4cc298;--focus:#ffcc4d;}}
+:root[data-theme="dark"]{--bg:#14131a;--surface:#1f1d28;--ink:#ece8f2;--muted:#a9a4b6;--line:#3a3646;--accent:#a394ff;--accent-ink:#14131a;--accent-soft:rgba(163,148,255,.18);--ok:#4cc298;--focus:#ffcc4d;}
+html[data-shape="oval"]{--rad:50%/50%;--ar:0.68}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.app{max-width:440px;margin:0 auto;padding:12px 16px 0;min-height:100dvh;display:flex;flex-direction:column}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:1rem;font-weight:700;letter-spacing:.02em;margin:0}
+.seg{display:flex;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:3px;gap:2px;margin:0;min-width:0}
+.seg legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg label{min-height:44px;min-width:56px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:.9rem;font-weight:600;cursor:pointer}
+.seg input:checked+label{background:var(--accent);color:var(--accent-ink)}
+.seg input:focus-visible+label{outline:3px solid var(--focus)}
+#countSeg label{min-width:52px;padding:0 8px}
+@media(max-width:359px){.top{flex-wrap:wrap}.top #countSeg{margin-left:auto}}
+
+.status{margin:14px 0 8px}
+.status h2{font-size:1.15rem;margin:0}
+.status p{margin:2px 0 0;color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.status p b{color:var(--ink)}
+
+/* tray */
+.tray{display:flex;justify-content:center;gap:12px;list-style:none;margin:0;padding:0}
+.tray.nudge{animation:nudge .35s}
+@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.slot{width:64px}
+.tray.n1 .slot{width:84px}
+.tray.big .slot{width:min(28vw,108px)}
+.tray.big.n1 .slot{width:140px}
+.tray.n10{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 8px}
+.tray.n10 .slot{width:100%;min-width:0}
+.tray.big.n10{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
+.tray.big.n10 .slot{width:100%}
+.tray.n10 .cardname{overflow-wrap:anywhere}
+.app:has(.tray.celtic){max-width:none;height:100dvh;min-height:0;padding-top:8px}
+.app:has(.tray.celtic)>.top,.app:has(.tray.celtic)>.status,.app:has(.tray.celtic)>.spreadhelp,.app:has(.tray.celtic)>details,.app:has(.tray.celtic)>.foot{flex-shrink:0}
+.app:has(.tray.celtic)>.status{margin:8px 0}
+.app:has(.tray.celtic)>details{display:none}
+.app:has(.tray.celtic) .foot{padding-top:6px}
+.app:has(.tray.celtic) .spreadhelp{margin:4px 0;font-size:.75rem}
+.tray.big.n10.celtic{flex:1;min-height:0;grid-template-columns:var(--spread-w) var(--spread-h) var(--spread-w) var(--spread-w);grid-template-rows:repeat(4,minmax(0,1fr));gap:6px 8px;justify-content:center;align-items:start}
+.tray.big.n10.celtic .slot{width:var(--spread-w);justify-self:center;position:relative}
+.tray.celtic .cardname{display:none}
+.tray.celtic .slotname{font-size:.65rem;text-align:center;height:26px;line-height:1.2;display:flex;align-items:center;justify-content:center}
+.tray.celtic .slot:nth-child(1){grid-column:2;grid-row:2}
+.tray.celtic .slot:nth-child(2){grid-column:2;grid-row:2;align-self:center;z-index:2;transform:translateY(13px)}
+.tray.celtic .box{width:var(--spread-w);height:var(--spread-h);aspect-ratio:auto!important}
+.tray.celtic .slot:nth-child(2) .box{transform:rotate(90deg)}
+.tray.celtic .slot:nth-child(2) .slotname{visibility:hidden}
+/* Keep position text off the crossing face; inspect for its position. */
+.tray.celtic .slot:first-child .face{justify-content:flex-start;padding-top:4%}
+.tray.celtic .slot:first-child .numeral{font-size:22cqw}
+.tray.celtic .slot:nth-child(3){grid-column:2;grid-row:3}
+.tray.celtic .slot:nth-child(4){grid-column:1;grid-row:2}
+.tray.celtic .slot:nth-child(5){grid-column:2;grid-row:1}
+.tray.celtic .slot:nth-child(6){grid-column:3;grid-row:2}
+.tray.celtic .slot:nth-child(7){grid-column:4;grid-row:4}
+.tray.celtic .slot:nth-child(8){grid-column:4;grid-row:3}
+.tray.celtic .slot:nth-child(9){grid-column:4;grid-row:2}
+.tray.celtic .slot:nth-child(10){grid-column:4;grid-row:1}
+@media(max-height:600px){
+  .tray.celtic .slotname{display:none}
+  .tray.celtic .slot:nth-child(2){align-self:start;transform:none}
+  .app:has(.tray.celtic) .status{margin:4px 0}
+  .app:has(.tray.celtic) .spreadhelp{font-size:.7rem}
+}
+@media(max-height:450px){.app:has(.tray.celtic){padding-top:4px}.app:has(.tray.celtic) #countSeg label{min-height:32px}.app:has(.tray.celtic) .status h2{font-size:1rem;line-height:1.2}.app:has(.tray.celtic) .status p{font-size:.75rem;margin:0}.app:has(.tray.celtic) .foot{padding:4px 0}.app:has(.tray.celtic) .foot .btn{min-height:40px}.tray.celtic .slotbtn{min-width:44px;margin-left:min(0px,calc((var(--spread-w) - 44px)/2))}}
+.spreadhelp{font-size:.85rem;color:var(--muted);margin:8px 0 14px}
+.spreadhelp[hidden]{display:none}
+.inspectimg[hidden]{display:none}
+.inspectimg{display:block;width:auto;height:auto;max-width:100%;max-height:55dvh;margin:12px auto;object-fit:contain;border-radius:8px}
+.inspectname{font-weight:700;color:var(--ink);text-align:center}
+#dlgInspect{max-height:90dvh;overflow:auto}
+.slotbtn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;cursor:pointer;border-radius:10px;padding:2px}
+.slotbtn:focus-visible{outline:3px solid var(--focus)}
+.slotname{font-size:.75rem;font-weight:700;color:var(--muted)}
+.box{position:relative;width:100%;aspect-ratio:var(--ar);perspective:700px}
+.empty{position:absolute;inset:0;border:2px dashed var(--line);border-radius:var(--rad);display:grid;place-items:center;color:var(--muted);font-size:1.1rem}
+.flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.slot.flipped .flip{transform:rotateY(180deg)}
+.flip>span{position:absolute;inset:0;border-radius:var(--rad);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face{transform:rotateY(180deg);background:var(--surface);border:2px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4px;gap:2px}
+.face{border:0;padding:0;border-radius:8px;overflow:hidden;background:#fffdf8}
+.face{color:#1f1d24;container-type:inline-size}
+.face .numeral{font:650 clamp(12px,48cqw,64px)/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.inspectnumber{display:grid;place-items:center;width:min(240px,100%);aspect-ratio:.6;max-height:55dvh;margin:12px auto;border-radius:8px;background:#fffdf8;color:#1f1d24;font:650 88px/1 system-ui,sans-serif}
+.cardname{font-size:.75rem;font-weight:650;text-align:center;line-height:1.25;margin-top:3px}
+
+.x{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:.75rem;font-weight:800;box-shadow:0 0 0 2px var(--bg)}
+.slot:not(.filled) .flip,.slot:not(.filled) .x,.slot.filled .empty,.locked .x{display:none}
+.slot.pop .box{animation:pop .45s}
+@keyframes pop{40%{transform:scale(1.14)}}
+
+/* card back */
+.back{background:
+  radial-gradient(circle at 50% 50%,transparent 0 15%,var(--back-line) 15% 16.5%,transparent 16.5% 26%,var(--back-line) 26% 27%,transparent 27%),
+  repeating-linear-gradient(45deg,var(--back1) 0 7px,var(--back2) 7px 14px);
+  box-shadow:inset 0 0 0 4px var(--back1),inset 0 0 0 5px var(--back-line)}
+
+/* fan stage */
+.stage{position:relative;height:286px;margin:10px -16px 0;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;border-radius:0}
+.stage:focus-visible{outline-offset:-4px;border-radius:18px}
+.stage.dragging{cursor:grabbing}
+.stage::before{content:"";position:absolute;left:50%;top:40px;width:220px;height:220px;margin-left:-110px;border-radius:50%;background:radial-gradient(circle,var(--accent-soft),transparent 70%);pointer-events:none}
+.card{position:absolute;left:calc(50% - var(--cw)/2);top:92px;width:var(--cw);aspect-ratio:var(--ar);border-radius:var(--rad);will-change:transform;
+  box-shadow:0 2px 6px rgba(0,0,0,.28),inset 0 0 0 4px var(--back1),inset 0 0 0 5px var(--back-line)}
+.card.is-center{box-shadow:0 14px 28px rgba(0,0,0,.38),inset 0 0 0 4px var(--back1),inset 0 0 0 5px var(--back-line),0 0 0 3px var(--accent),0 0 0 7px var(--accent-soft)}
+.card.taken{animation:taken .26s ease-in forwards}
+@keyframes taken{to{opacity:0;translate:0 -90px}}
+.stage.locked{display:none}
+.deckempty{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted)}
+
+.focuslabel{text-align:center;margin:0 0 8px;min-height:44px}
+.focuslabel b{display:block;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.focuslabel span{font-size:.82rem;color:var(--muted)}
+
+.pick{display:grid;grid-template-columns:56px 1fr 56px;gap:10px;align-items:center}
+.btn{min-height:48px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:650;cursor:pointer}
+.btn.icon{min-height:56px;padding:0;font-size:1.4rem}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.select{min-height:56px;font-size:1.05rem}
+.btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed}
+.btn[hidden],.pick[hidden],.focuslabel[hidden]{display:none}
+
+.foot{position:sticky;bottom:0;margin-top:auto;display:flex;gap:10px;padding:12px 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 80%,transparent);z-index:5}
+.foot .btn{flex:1}
+.foot .btn.primary{flex:2}
+.ready{animation:ready 1.6s ease-in-out 2}
+@keyframes ready{50%{box-shadow:0 0 0 6px var(--accent-soft)}}
+
+details.more{margin:10px 0 4px;font-size:.9rem}
+details.more summary{min-height:44px;display:flex;align-items:center;color:var(--muted);cursor:pointer}
+.morebody{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-bottom:6px}
+.morebody .seg label{min-width:48px;font-size:.85rem}
+.morebody .lbl{font-size:.75rem;color:var(--muted);width:100%;margin-bottom:-6px}
+
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);width:min(360px,calc(100vw - 32px));padding:20px}
+dialog::backdrop{background:rgba(10,8,20,.6)}
+dialog h2{font-size:1.15rem;margin:0 0 6px}
+dialog p{margin:0 0 4px;color:var(--muted)}
+dialog .row{display:flex;gap:10px;margin-top:18px}
+dialog .row .btn{flex:1}
+.piles{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.piles .btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;min-width:72px}
+.piles i{width:40px;aspect-ratio:var(--ar);border-radius:var(--rad)}
+
+.rm *,.rm *::before,.rm *::after{transition:none!important;animation:none!important}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top">
+    <h1 class="brand">RigaRada</h1>
+    <fieldset class="seg" id="countSeg">
+      <legend>Reading size</legend>
+      <input type="radio" name="count" id="c1" value="1"><label for="c1">1 card</label>
+      <input type="radio" name="count" id="c3" value="3"><label for="c3">3 cards</label>
+      <input type="radio" name="count" id="c10" value="10"><label for="c10">10 cards</label>
+    </fieldset>
+  </div>
+
+  <div class="status">
+    <h2 id="headline" tabindex="-1">Choose 3 cards</h2>
+    <p id="progress"></p>
+  </div>
+
+  <ol class="tray" id="tray" aria-label="Your chosen cards"></ol>
+  <p class="spreadhelp" id="spreadHelp" hidden>Celtic Cross · Tap a position to inspect its card.</p>
+
+  <div id="stage" class="stage" role="listbox" tabindex="0"
+       aria-roledescription="card fan" aria-label="Deck of face-down cards"
+       aria-describedby="stageHelp"></div>
+  <p id="stageHelp" class="sr-only">Left and right arrow keys browse the fan. Enter or Space chooses the focused card.</p>
+
+  <div class="focuslabel" id="focusLabel" aria-hidden="true"><b id="focusPos"></b><span id="focusHint">Face-down · swipe the fan to browse</span></div>
+
+  <div class="pick" id="pick">
+    <button class="btn icon" id="bPrev" type="button" aria-label="Previous card">‹</button>
+    <button class="btn primary select" id="bSelect" type="button">Select this card</button>
+    <button class="btn icon" id="bNext" type="button" aria-label="Next card">›</button>
+  </div>
+
+  <details class="more">
+    <summary>More options</summary>
+    <div class="morebody">
+      <button class="btn" id="bShuffle" type="button">Shuffle</button>
+      <button class="btn" id="bCut" type="button">Cut…</button>
+      <span class="lbl" aria-hidden="true">Motion</span>
+      <fieldset class="seg"><legend>Reduce motion</legend>
+        <input type="radio" name="motion" id="r-auto" value="auto"><label for="r-auto">Auto</label>
+        <input type="radio" name="motion" id="r-on" value="on"><label for="r-on">Reduce</label>
+        <input type="radio" name="motion" id="r-off" value="off"><label for="r-off">Full</label>
+      </fieldset>
+      <span class="lbl" aria-hidden="true">Card shape (placeholder)</span>
+      <fieldset class="seg"><legend>Card shape</legend>
+        <input type="radio" name="shape" id="s-rect" value="rect"><label for="s-rect">Rect</label>
+        <input type="radio" name="shape" id="s-oval" value="oval"><label for="s-oval">Oval</label>
+      </fieldset>
+    </div>
+  </details>
+
+  <div class="foot">
+    <button class="btn" id="bUndo" type="button">Undo</button>
+    <button class="btn primary" id="bReveal" type="button">Reveal…</button>
+    <button class="btn primary" id="bNew" type="button" hidden>New reading</button>
+  </div>
+</main>
+
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+<dialog id="dlgReveal" aria-labelledby="dRH" aria-describedby="dRP">
+  <h2 id="dRH">Reveal your cards?</h2>
+  <p id="dRP"></p>
+  <div class="row">
+    <button class="btn" id="dBack" type="button">Go back</button>
+    <button class="btn primary" id="dGo" type="button">Reveal cards</button>
+  </div>
+</dialog>
+
+<dialog id="dlgCut" aria-labelledby="dCH">
+  <h2 id="dCH">Cut the deck</h2>
+  <p>Choose which pile goes on top.</p>
+  <div class="piles" id="piles"></div>
+  <div class="row"><button class="btn" id="dCutCancel" type="button">Cancel</button></div>
+</dialog>
+<dialog id="dlgInspect" aria-labelledby="inspectTitle">
+  <h2 id="inspectTitle"></h2>
+  <p id="inspectMeaning"></p>
+  <div class="inspectnumber" id="inspectNumber"></div>
+  <div class="row"><button class="btn" id="inspectPrev" type="button">Previous</button><button class="btn" id="inspectNext" type="button">Next</button></div>
+  <div class="row"><button class="btn primary" id="inspectClose" type="button">Back to spread</button></div>
+</dialog>
+
+<script>
+(()=>{
+"use strict";
+const DECK=Array.from({length:78},(_,i)=>({id:String(i+1),name:String(i+1),width:600,height:1000}));
+const N=DECK.length, SLOP=8, PX_PER_CARD=46, FLICK_MS=140, TAP_MAX_MS=650, SUPPRESS_MS=450;
+const POS={1:['Your card'],3:['Past','Present','Future'],10:Array.from({length:10},(_,i)=>`Card ${i+1}`)};
+const CELTIC=['Present','Challenge','Foundation','Past','Goals','Near future','Self','Environment','Hopes & fears','Outcome'];
+const CONTEXT=['The situation at the centre of the reading.','What crosses or challenges the situation.','The underlying influences or roots.','The background and recent past.','Your conscious goals or possibilities.','The next developments to consider.','Your perspective and approach.','The people and circumstances around you.','Your hopes, fears or expectations.','The direction suggested by the spread.'];
+const positionLabel=i=>S.count===10?`${i+1} · ${CELTIC[i]}`:POS[S.count][i];
+const $=s=>document.querySelector(s);
+const stage=$('#stage'), live=$('#live');
+const mqRM=matchMedia('(prefers-reduced-motion: reduce)');
+const shuffled=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const faceLabel=id=>DECK[id].name;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+// Card identities live only in this closure; the DOM never carries them before reveal.
+const S={count:3,order:shuffled([...Array(N).keys()]),slots:[null,null,null],cur:Math.floor(N/2),
+  revealed:false,hist:[],motion:'auto',shape:'rect',busy:false};
+let f=S.cur, cardEls=[], raf=0, P=null, suppressUntil=0, wheelAcc=0, revealGeneration=0, selectionGeneration=0;
+
+const chosen=()=>S.slots.filter(x=>x!==null);
+const avail=()=>S.order.filter(id=>!S.slots.includes(id));
+const reduced=()=>S.motion==='on'||(S.motion==='auto'&&mqRM.matches);
+const say=t=>{live.textContent='';setTimeout(()=>{live.textContent=t},30)};
+const setDis=(b,on)=>b.setAttribute('aria-disabled',on?'true':'false');
+const isDis=b=>b.getAttribute('aria-disabled')==='true';
+const snap=()=>{S.hist.push(JSON.stringify({order:S.order,slots:S.slots,count:S.count,cur:S.cur}));if(S.hist.length>60)S.hist.shift()};
+
+/* ---------------- fan rendering ---------------- */
+function buildDeck(){
+  const A=avail();
+  S.cur=clamp(S.cur,0,Math.max(0,A.length-1));
+  stage.innerHTML='';cardEls=[];
+  if(!A.length){stage.innerHTML='<div class="deckempty">Deck empty</div>';return}
+  A.forEach((_,i)=>{
+    const el=document.createElement('div');
+    el.className='card back';el.id='opt-'+i;el.dataset.idx=i;el.setAttribute('role','option');
+    stage.appendChild(el);cardEls.push(el);
+  });
+  f=S.cur;paint(f);updateAria();
+}
+function radius(){return clamp(stage.clientWidth*1.05,380,560)}
+function paint(fp){
+  const R=radius(),step=7,gap=3.5;
+  for(const el of cardEls){
+    const d=+el.dataset.idx-fp,ad=Math.abs(d);
+    if(ad>7.5){el.style.visibility='hidden';continue}
+    el.style.visibility='';
+    const a=d*step+Math.sign(d)*Math.min(ad,1)*gap,r=a*Math.PI/180;
+    const x=R*Math.sin(r),y=R*(1-Math.cos(r)),t=Math.max(0,1-ad);
+    el.style.transform=`translate(${x.toFixed(1)}px,${(y-34*t).toFixed(1)}px) rotate(${a.toFixed(2)}deg) scale(${(1+0.32*t).toFixed(3)})`;
+    el.style.zIndex=String(300-Math.round(ad*10));
+    el.style.opacity=ad>6?String(clamp((7.5-ad)/1.5,0,1)):'1';
+    el.classList.toggle('is-center',ad<0.5);
+  }
+}
+function tweenTo(target){
+  cancelAnimationFrame(raf);
+  if(reduced()){f=target;paint(f);return}
+  const f0=f,t0=performance.now(),dur=280;
+  const tick=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);f=f0+(target-f0)*e;paint(f);if(k<1)raf=requestAnimationFrame(tick)};
+  raf=requestAnimationFrame(tick);
+}
+function updateAria(){
+  const n=cardEls.length;
+  cardEls.forEach((el,i)=>{
+    el.setAttribute('aria-selected',i===S.cur?'true':'false');
+    el.setAttribute('aria-label',`Face-down card ${i+1} of ${n}`+(i===S.cur?', focused':''));
+  });
+  if(n)stage.setAttribute('aria-activedescendant','opt-'+S.cur);else stage.removeAttribute('aria-activedescendant');
+  $('#focusPos').textContent=n?`Card ${S.cur+1} of ${n}`:'No cards left';
+  setDis($('#bPrev'),S.cur<=0||S.revealed);setDis($('#bNext'),S.cur>=n-1||S.revealed);
+  const full=chosen().length>=S.count;
+  setDis($('#bSelect'),full||!n||S.revealed);
+  $('#bSelect').textContent=full?'All chosen — review above':'Select this card';
+  $('#bSelect').setAttribute('aria-label',full?'All cards chosen':`Select card ${S.cur+1} of ${n}`);
+}
+function setCursor(i,announce){
+  const n=cardEls.length;if(!n)return;
+  i=clamp(Math.round(i),0,n-1);
+  const changed=i!==S.cur;S.cur=i;
+  tweenTo(i);updateAria();
+  if(announce&&changed)say(`Card ${i+1} of ${n}`);
+}
+
+/* ---------------- actions ---------------- */
+function choose(){
+  if(S.revealed||S.busy||!cardEls.length)return;
+  const slot=S.slots.indexOf(null);
+  if(slot<0){say(`All ${S.count} chosen. Remove one, or reveal.`);nudge();return}
+  const id=avail()[S.cur];
+  if(id===undefined||S.slots.includes(id))return;            // guard: never duplicate
+  S.busy=true;
+  const generation=selectionGeneration;
+  const el=cardEls[S.cur];
+  const commit=()=>{
+    if(generation!==selectionGeneration)return;
+    snap();S.slots[slot]=id;S.busy=false;
+    renderAll();
+    const s=document.querySelector(`.slot[data-i="${slot}"]`);if(s){s.classList.add('pop')}
+    const n=chosen().length,left=S.count-n;
+    say(`Card chosen${S.count>1?' for '+POS[S.count][slot]:''}. ${n} of ${S.count} chosen${left?', '+left+' left':''}.${left?'':' Ready to reveal.'}`);
+    if(!left)$('#bReveal').classList.add('ready');
+  };
+  if(reduced()||!el)commit();else{el.classList.add('taken');setTimeout(commit,240)}
+}
+function removeSlot(i){
+  if(S.revealed||S.slots[i]===null)return;
+  snap();const id=S.slots[i];S.slots[i]=null;
+  S.cur=avail().indexOf(id);                 // bring the returned card to the centre
+  renderAll();
+  const b=document.querySelector(`.slot[data-i="${i}"] .slotbtn`);b&&b.focus();
+  say(`${POS[S.count][i]} cleared. Card returned to the deck and focused. ${chosen().length} of ${S.count} chosen.`);
+}
+function undo(){
+  if(S.revealed||!S.hist.length)return;
+  cancelPendingSelection();
+  Object.assign(S,JSON.parse(S.hist.pop()));syncControls();renderAll();
+  say(`Undone. ${chosen().length} of ${S.count} chosen.`);
+}
+function setCount(n){
+  if(n===S.count)return;
+  cancelPendingSelection();
+  if(S.revealed)newReading(false);
+  snap();const keep=chosen();S.count=n;S.slots=Array(n).fill(null);
+  keep.slice(0,n).forEach((id,i)=>S.slots[i]=id);
+  renderAll();
+  say(`${n}-card reading. ${chosen().length} of ${n} chosen.`+(keep.length>n?' Extra picks returned to the deck.':''));
+}
+function doShuffle(){
+  if(S.revealed)return;
+  snap();S.order=shuffled(S.order);S.cur=Math.floor(avail().length/2);renderAll();say('Deck shuffled.');
+}
+function openCut(){
+  if(S.revealed)return;
+  const A=avail(),t=Math.ceil(A.length/3),piles=[A.slice(0,t),A.slice(t,2*t),A.slice(2*t)];
+  const box=$('#piles');box.innerHTML='';
+  piles.forEach((p,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='btn';
+    b.setAttribute('aria-label',`Pile ${i+1}, ${p.length} cards`);
+    b.innerHTML=`<i class="back" aria-hidden="true"></i>Pile ${i+1}`;
+    b.onclick=()=>{snap();S.order=[...p,...piles.filter((_,k)=>k!==i).flat(),...chosen()];S.cur=Math.floor(avail().length/2);
+      $('#dlgCut').close();renderAll();stage.focus();say(`Deck cut. Pile ${i+1} on top.`)};
+    box.appendChild(b);
+  });
+  $('#dlgCut').showModal();
+}
+function askReveal(){
+  const left=S.count-chosen().length;
+  if(left>0){say(`Choose ${left} more card${left>1?'s':''} first.`);nudge();return}
+  $('#dRP').textContent=`You chose ${S.count} face-down card${S.count>1?'s':''}. Revealing locks this draw — you can't change picks afterwards.`;
+  $('#dlgReveal').showModal();
+}
+function reveal(){
+  const generation=++revealGeneration;
+  $('#dlgReveal').close();
+  S.revealed=true;S.hist=[];renderAll();
+  const slots=[...document.querySelectorAll('.slot')];
+  let i=0;
+  const step=()=>{
+    if(!S.revealed||generation!==revealGeneration)return;
+    const li=slots[i],id=S.slots[i];
+    renderFace(li,id); // Show the numeral only after confirmation.
+    li.classList.add('flipped');
+    li.querySelector('.slotbtn').setAttribute('aria-label',`${POS[S.count][i]}: ${faceLabel(id)}`);
+    if(S.count===10){li.querySelector('.slotname').textContent=positionLabel(i);li.querySelector('.slotbtn').setAttribute('aria-label',`${positionLabel(i)}: ${faceLabel(id)}. Inspect card.`)}
+    i++;
+    if(i<slots.length)setTimeout(step,reduced()?0:520);
+    else setTimeout(()=>{
+      if(!S.revealed||generation!==revealGeneration)return;
+      $('#headline').textContent='Your reading';$('#headline').focus();
+      say('Revealed. '+S.slots.map((id,k)=>`${POS[S.count][k]}: ${faceLabel(id)}`).join('. ')+'.');
+      $('#bNew').hidden=false;
+      fitCeltic(); // Include the visible New reading control in the final viewport budget.
+    },reduced()?0:450);
+  };
+  setTimeout(step,reduced()?0:200);
+}
+function renderFace(li,id){
+  const card=DECK[id],face=li.querySelector('.face');
+  face.replaceChildren();face.dataset.cardId=card.id;
+  li.querySelector('.box').style.aspectRatio=String(card.width/card.height);
+  const numeral=document.createElement('span');
+  numeral.className='numeral';numeral.textContent=card.name;
+  face.append(numeral);
+}
+function newReading(announce=true){
+  revealGeneration++; // Cancel callbacks from a reading replaced during its reveal.
+  cancelPendingSelection();
+  S.revealed=false;S.hist=[];S.slots=Array(S.count).fill(null);S.order=shuffled([...Array(N).keys()]);S.cur=Math.floor(N/2);
+  renderAll();if(announce){stage.focus();say('New reading. Deck reshuffled.')}
+}
+function cancelPendingSelection(){selectionGeneration++;S.busy=false;}
+let inspectIndex=0;
+function inspectCard(i){
+  if(!S.revealed||S.count!==10||!document.querySelector(`.slot[data-i="${i}"].flipped`))return;
+  inspectIndex=i;const card=DECK[S.slots[i]];
+  $('#inspectTitle').textContent=positionLabel(i);$('#inspectMeaning').textContent=CONTEXT[i];
+  $('#inspectNumber').textContent=card.name;
+  setDis($('#inspectPrev'),i===0);setDis($('#inspectNext'),i===9||!document.querySelector(`.slot[data-i="${i+1}"].flipped`));
+  if(!$('#dlgInspect').open)$('#dlgInspect').showModal();
+}
+function nudge(){const t=$('#tray');t.classList.remove('nudge');void t.offsetWidth;t.classList.add('nudge')}
+
+/* ---------------- rendering ---------------- */
+function renderAll(){
+  document.documentElement.classList.toggle('rm',reduced());
+  document.documentElement.dataset.shape=S.shape;
+  renderTray();buildDeck();renderStatus();fitCeltic();
+}
+function fitCeltic(){
+  if(!S.revealed||S.count!==10)return;
+  const tray=$('#tray'),r=tray.getBoundingClientRect();
+  const label=tray.querySelector('.slotname'),extra=getComputedStyle(label).position==='absolute'?4:label.offsetHeight+8;
+  const h=Math.max(12,Math.min(160,(r.width-24)/2.8,(r.height-4*extra-18)/4));
+  tray.style.setProperty('--spread-h',h+'px');tray.style.setProperty('--spread-w',(h*.6)+'px');
+}
+function renderTray(){
+  const ol=$('#tray');ol.innerHTML='';
+  ol.className='tray n'+S.count+(S.revealed?' big locked':'')+(S.revealed&&S.count===10?' celtic':'');
+  $('#spreadHelp').hidden=!(S.revealed&&S.count===10);
+  S.slots.forEach((id,i)=>{
+    const li=document.createElement('li');li.className='slot'+(id!==null?' filled':'');li.dataset.i=i;
+    li.innerHTML=`<button class="slotbtn" type="button"><span class="slotname" aria-hidden="true">${POS[S.count][i]}</span>
+      <span class="box" aria-hidden="true"><span class="empty">${S.count>1?i+1:'?'}</span>
+      <span class="flip"><span class="back"></span><span class="face"></span></span><span class="x">✕</span></span></button>`;
+    li.querySelector('.slotname').dataset.position=i+1;
+    const b=li.querySelector('.slotbtn');
+    b.setAttribute('aria-label',id===null?`${POS[S.count][i]}: empty`:`${POS[S.count][i]}: face-down card chosen. Activate to put it back.`);
+    b.onclick=()=>{if(S.revealed){inspectCard(i);return}if(S.slots[i]!==null)removeSlot(i);else say(`${POS[S.count][i]} is empty.`)};
+    b.onkeydown=e=>{if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();removeSlot(i)}};
+    ol.appendChild(li);
+  });
+}
+function renderStatus(){
+  const n=chosen().length,left=S.count-n;
+  $('#headline').textContent=S.revealed?'Revealing…':(left?`Choose ${S.count===1?'1 card':left===S.count?S.count+' cards':left+' more'}`:'Ready to reveal');
+  $('#progress').innerHTML=`<b>${n} of ${S.count}</b> chosen · ${left} left · ${avail().length} in deck`;
+  stage.classList.toggle('locked',S.revealed);stage.inert=S.revealed;
+  $('#pick').hidden=S.revealed;$('#focusLabel').hidden=S.revealed;
+  $('#bUndo').hidden=S.revealed;setDis($('#bUndo'),!S.hist.length);
+  $('#bReveal').hidden=S.revealed;setDis($('#bReveal'),left>0);
+  $('#bReveal').textContent=left>0?`Reveal (${left} to go)`:'Reveal…';
+  if(left>0)$('#bReveal').classList.remove('ready');
+  $('#bNew').hidden=true;
+  setDis($('#bShuffle'),S.revealed);setDis($('#bCut'),S.revealed);
+}
+
+/* ---------------- gestures ----------------
+   Taps are resolved in pointerup only (never via the click event).
+   Any pointer movement beyond SLOP marks the gesture as a drag; drags never select,
+   and a window-level capture listener swallows the trailing click for SUPPRESS_MS. */
+stage.addEventListener('pointerdown',e=>{
+  if(S.revealed||!e.isPrimary||e.button>0)return;
+  cancelAnimationFrame(raf);
+  P={id:e.pointerId,x0:e.clientX,y0:e.clientY,t0:performance.now(),f0:f,axis:null,moved:false,
+     card:e.target.closest('.card'),samples:[[e.clientX,performance.now()]]};
+});
+stage.addEventListener('pointermove',e=>{
+  if(!P||e.pointerId!==P.id)return;
+  const dx=e.clientX-P.x0,dy=e.clientY-P.y0;
+  if(!P.axis){
+    if(Math.hypot(dx,dy)<SLOP)return;
+    P.moved=true;
+    P.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    if(P.axis==='x'){try{stage.setPointerCapture(P.id)}catch(_){}stage.classList.add('dragging')}
+  }
+  if(P.axis!=='x')return;                       // vertical: leave it to page scroll
+  e.preventDefault();
+  const n=cardEls.length,raw=P.f0-dx/PX_PER_CARD;
+  f=raw<0?raw*0.3:raw>n-1?(n-1)+(raw-(n-1))*0.3:raw;   // rubber-band at ends
+  paint(f);
+  const now=performance.now();P.samples.push([e.clientX,now]);if(P.samples.length>6)P.samples.shift();
+  const near=clamp(Math.round(f),0,n-1);
+  if(near!==P.lastNear){P.lastNear=near;$('#focusPos').textContent=`Card ${near+1} of ${n}`}
+});
+function endGesture(e,cancelled){
+  if(!P||(e&&e.pointerId!==P.id))return;
+  const p=P;P=null;stage.classList.remove('dragging');
+  if(p.moved||cancelled){
+    suppressUntil=performance.now()+SUPPRESS_MS;
+    if(p.axis==='x'){
+      // velocity from the last 100ms only: a finger that pauses before lifting lands exactly where it is
+      const now=performance.now(),s=p.samples.filter(q=>now-q[1]<=100);
+      let v=0;
+      if(s.length>=2){const a=s[0],b=s[s.length-1];v=(b[0]-a[0])/Math.max(1,b[1]-a[1])}
+      if(Math.abs(v)<0.35)v=0;                   // ignore slow drift
+      const flick=clamp(-(v*FLICK_MS)/PX_PER_CARD,-3,3);
+      const target=f+flick;
+      setCursor(target,true);
+    }else if(cancelled){setCursor(S.cur,false)}
+    return;                                      // a drag never selects
+  }
+  if(performance.now()-p.t0>TAP_MAX_MS)return;   // long press: ignore
+  if(!p.card)return;
+  const i=+p.card.dataset.idx;
+  if(i===S.cur)choose();
+  else setCursor(i,true);                        // tapping a side card only focuses it
+}
+stage.addEventListener('pointerup',e=>endGesture(e,false));
+stage.addEventListener('pointercancel',e=>endGesture(e,true));
+// A touch that starts on a card is implicitly captured by that card; stage.setPointerCapture() then transfers it,
+// which fires lostpointercapture on the card and bubbles here. Only a loss on the stage itself ends the gesture.
+stage.addEventListener('lostpointercapture',e=>{if(e.target===stage&&P&&e.pointerId===P.id)endGesture(e,true)});
+window.addEventListener('click',e=>{
+  if(e.detail>0&&performance.now()<suppressUntil){e.preventDefault();e.stopPropagation()}
+},true);
+stage.addEventListener('click',e=>{e.preventDefault()});   // pointer taps are handled above; ignore clicks here
+stage.addEventListener('wheel',e=>{
+  if(S.revealed||Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;
+  e.preventDefault();wheelAcc+=e.deltaX;
+  if(Math.abs(wheelAcc)>=50){setCursor(S.cur+Math.sign(wheelAcc),true);wheelAcc=0}
+},{passive:false});
+
+/* ---------------- keyboard ---------------- */
+stage.addEventListener('keydown',e=>{
+  if(S.revealed)return;
+  const n=cardEls.length;let to=null;
+  switch(e.key){
+    case 'ArrowRight':case 'ArrowDown':to=S.cur+1;break;
+    case 'ArrowLeft':case 'ArrowUp':to=S.cur-1;break;
+    case 'Home':to=0;break;
+    case 'End':to=n-1;break;
+    case 'PageDown':to=S.cur+5;break;
+    case 'PageUp':to=S.cur-5;break;
+    case 'Enter':case ' ':e.preventDefault();if(!e.repeat)choose();return;
+    default:return;
+  }
+  e.preventDefault();setCursor(to,false);
+});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'&&!document.querySelector('dialog[open]')){e.preventDefault();undo()}
+});
+
+/* ---------------- wiring ---------------- */
+const on=(id,fn,always)=>$(id).addEventListener('click',()=>{if(!always&&isDis($(id)))return;fn()});
+on('#bPrev',()=>setCursor(S.cur-1,true));
+on('#bNext',()=>setCursor(S.cur+1,true));
+on('#bSelect',choose);
+on('#bUndo',undo);
+on('#bReveal',askReveal,true);
+on('#bNew',()=>newReading(),true);
+on('#bShuffle',doShuffle);on('#bCut',openCut);
+$('#dBack').onclick=()=>{$('#dlgReveal').close();say('Picks kept. You can still change them.')};
+$('#dGo').onclick=reveal;
+$('#dCutCancel').onclick=()=>$('#dlgCut').close();
+on('#inspectPrev',()=>inspectCard(inspectIndex-1));on('#inspectNext',()=>inspectCard(inspectIndex+1));
+$('#inspectClose').onclick=()=>$('#dlgInspect').close();
+
+function syncControls(){for(const k of ['count','motion','shape']){const el=document.querySelector(`input[name="${k}"][value="${S[k]}"]`);if(el)el.checked=true}}
+document.querySelectorAll('input[type=radio]').forEach(inp=>inp.addEventListener('change',()=>{
+  if(inp.name==='count'){setCount(+inp.value);return}
+  S[inp.name]=inp.value;
+  document.documentElement.classList.toggle('rm',reduced());
+  document.documentElement.dataset.shape=S.shape;paint(f);
+}));
+mqRM.addEventListener?.('change',()=>document.documentElement.classList.toggle('rm',reduced()));
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{paint(f);fitCeltic()},80)});
+
+syncControls();renderAll();
+})();
+</script>
+</body>
+</html>
