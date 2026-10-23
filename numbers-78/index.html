@@ -190,6 +190,20 @@ dialog .row{margin-top:8px}dialog .btn{min-height:44px;font-size:.9rem;padding:0
 .short-wide .app.ready .tray,.short-wide .app.revealed .tray{grid-row:3/6}
 .short-wide .app.ready .spreadhelp{display:block}
 
+
+/* Local review: compact rows and equal settled picker/spread dimensions. */
+.app>.top{display:none}
+.short-wide .app,.short-wide .app:has(.tray.revealed){grid-template-rows:0px 18px minmax(0,1fr) 14px 44px 44px}
+.short-wide .status{grid-row:2}
+.short-wide .app,.short-wide .app:has(.tray.revealed){display:grid}
+.tray.mapped,.tray.mapped.revealed{flex:0 0 auto;height:calc(3 * var(--spread-row,64px) + 12px);grid-template-rows:repeat(3,var(--spread-row,64px));gap:6px;align-content:start}
+.tray.mapped .slotname{display:none}
+.tray.mapped .slotbtn{gap:0}
+.stage{flex:1 0 var(--fan-height,84px);min-height:var(--fan-height,84px)}
+.app .foot,.app:has(.tray.revealed) .foot{margin-top:auto}
+.short-wide .tray.mapped,.short-wide .tray.mapped.revealed{height:100%;grid-template-rows:repeat(3,var(--spread-row,48px));align-content:center}
+.short-wide .stage{min-height:0;height:100%}
+
 </style>
 </head>
 <body>
@@ -469,22 +483,36 @@ function renderAll(){
   renderTray();buildDeck();renderStatus();fitSpread();
 }
 function fitSpread(){
-  const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight;
-  const root=document.documentElement;
+  const v=window.visualViewport,scale=Math.min(1,v?.scale||1);
+  const w=(v?.width||innerWidth)*scale,h=(v?.height||innerHeight)*scale;
+  const root=document.documentElement,app=$('.app'),tray=$('#tray');
   root.style.setProperty('--app-height',Math.floor(h)+'px');
   root.style.setProperty('--app-width',Math.floor(w)+'px');
-  root.classList.toggle('short-wide',w>=480&&h<500);
-  root.style.setProperty('--fan-height',(h<540?72:100)+'px');
-  if(!stage.classList.contains('locked')){
-    const sh=stage.clientHeight,cw=Math.min(42,Math.max(22,(sh-4)*.6/1.32));
-    stage.style.setProperty('--cw',cw+'px');stage.style.setProperty('--fan-top',(34+sh/2-cw/1.2)+'px');
+  const wide=w>=480&&h<500;
+  root.classList.toggle('short-wide',wide);
+  const hasFan=!stage.classList.contains('locked');
+  const style=getComputedStyle(app),gap=parseFloat(style.gap)||4;
+  let cardH;
+  if(wide){
+    const r=tray.getBoundingClientRect();
+    cardH=Math.min(180,(r.width-34)/2.4,(r.height-12)/3-4,hasFan?stage.clientHeight-8:Infinity);
+  }else{
+    const shown=[...app.children].filter(el=>getComputedStyle(el).display!=='none');
+    const fixed=shown.filter(el=>el!==tray&&el!==stage).reduce((sum,el)=>sum+el.getBoundingClientRect().height,0);
+    const available=app.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-fixed-gap*(shown.length-1);
+    cardH=Math.min(180,(tray.clientWidth-34)/2.4,(available-24-(hasFan?8:0))/(hasFan?4:3));
   }
-  const tray=$('#tray'),r=tray.getBoundingClientRect();
-  const label=tray.querySelector('.slotname'),extra=label.offsetHeight+6;
-  const cardH=Math.max(12,Math.min(220,(r.width-28)/2.4,(r.height-8)/3-extra));
+  cardH=Math.max(12,cardH);
   tray.style.setProperty('--spread-h',cardH+'px');
   tray.style.setProperty('--spread-w',(cardH*.6)+'px');
   tray.style.setProperty('--spread-cell',Math.max(44,cardH*.6+4)+'px');
+  tray.style.setProperty('--spread-row',Math.max(44,cardH+4)+'px');
+  root.style.setProperty('--fan-height',(cardH+8)+'px');
+  if(hasFan){
+    const cw=cardH*.6/1.32,sh=stage.clientHeight;
+    stage.style.setProperty('--cw',cw+'px');
+    stage.style.setProperty('--fan-top',(34+sh/2-cw/1.2)+'px');
+  }
 }
 function renderTray(){
   const ol=$('#tray');ol.innerHTML='';
