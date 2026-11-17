@@ -21,3 +21,7 @@ Artwork requests start only after reveal confirmation. A readable named fallback
 an image fails to load; the selected draw remains unchanged.
 
 See [the handoff](docs/FAN_ARC_HANDOFF.md) for interaction details and testing limitations.
+
+## Smith Waite tarot (`smith-waite/`)
+
+The same picker with the 78 cards of the original 1909 Rider–Waite–Smith printing (art by Pamela Colman Smith), public-domain scans from Wikimedia Commons; see `assets/smith-waite/SOURCES.md` and `sources.json` for every file's source page, licence and SHA-1. An option switches between upright cards only (หัวตั้งล้วน) and upright mixed with reversed (หัวตั้งผสมกลับหัว); in mixed mode each card has an even chance of being reversed when the reading is revealed, and reversed cards are shown rotated and labelled กลับหัว. These are not U.S. Games Systems' Centennial scans.
