@@ -12,7 +12,7 @@
   --bg:#f4f1ea;--surface:#fffdf8;--ink:#1f1d24;--muted:#5f5a68;--line:#d6cfc2;
   --accent:#5143a8;--accent-ink:#fff;--accent-soft:rgba(81,67,168,.16);
   --back1:#2b2838;--back2:#36324a;--back-line:#c9b98a;--ok:#2a7f5f;--focus:#c98a00;
-  --ar:0.6;--rad:10px;
+  --ar:0.574;--rad:10px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#14131a;--surface:#1f1d28;--ink:#ece8f2;--muted:#a9a4b6;--line:#3a3646;
@@ -49,6 +49,7 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 .top{flex-wrap:wrap}
 .top #countSeg,.top #orientSeg{flex:1 1 100%}
 #orientSeg label{flex:1;min-width:0;padding:0 4px;font-size:.85rem;white-space:nowrap}
+.face img,.bigcard img{border-radius:6px;display:block}
 .face img.rev,.bigcard img.rev{transform:rotate(180deg)}
 .revtag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-size:.7rem;font-weight:700;vertical-align:middle}
 #countSeg label{flex:1;min-width:0;padding:0 2px;font-size:.85rem;white-space:nowrap}
@@ -256,7 +257,7 @@ dialog .row .btn{flex:1}
         <input type="radio" name="motion" id="r-on" value="on"><label for="r-on">ลด</label>
         <input type="radio" name="motion" id="r-off" value="off"><label for="r-off">เต็ม</label>
       </fieldset>
-      <p class="note">RigaRada · ภาพไพ่จากสำรับ Rider–Waite–Smith พิมพ์ปี 1909 (ภาพโดย Pamela Colman Smith) สแกนจากสำรับจริงโดย Saskia Jansen · สาธารณสมบัติ (public domain) ผ่าน Wikimedia Commons · ไม่ใช่สินค้าหรือภาพสแกนของ U.S. Games Systems</p>
+      <p class="note">RigaRada · ภาพไพ่จากสำรับ Rider–Waite–Smith พิมพ์ปี 1909 (ภาพโดย Pamela Colman Smith) สแกนจากสำรับจริงโดย Saskia Jansen · สาธารณสมบัติ (public domain) ผ่าน Wikimedia Commons · ครอบตัดตามกรอบและปรับสีกระดาษเหลืองให้เป็นกลาง · ไม่ใช่สินค้าหรือภาพสแกนของ U.S. Games Systems</p>
     </div>
   </details>
 
